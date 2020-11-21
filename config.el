@@ -3,7 +3,7 @@
 
 ;; some functionality uses this to identify you, e.g. gpg configuration, email
 ;; clients, file templates and snippets.
-(setq user-full-name "zulfiqar soomro"
+(setq user-full-name "Zulfiqar Soomro"
       user-mail-address "me@zusoomro.com")
 
 ;; doom exposes five (optional) variables for controlling fonts in doom. here
@@ -16,8 +16,8 @@
 ;;
 ;; they all accept either a font-spec, font string ("input mono-12"), or xlfd
 ;; font string. you generally only need these two:
-(setq doom-font (font-spec :family "Fira code" :size 13)
-      doom-variable-pitch-font (font-spec :family "ETBembo" :size 16))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 13)
+      doom-variable-pitch-font (font-spec :family "JetBrains Mono" :size 15))
 
 ;; there are two ways to load a theme. both assume the theme is installed and
 ;; available. you can either set `doom-theme' or manually load a theme with the
@@ -56,6 +56,99 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+(setq org-roam-directory "~/Dropbox/notes")
+(setq visual-fill-column-center-text t)
+
+(add-hook! org-mode (visual-fill-column-mode))
+
+(setq org-agenda-files `("~/Dropbox/gtd/agenda.org" "~/Dropbox/gtd/projects.org" "~/Dropbox/inbox.org"))
+
+(after! org (setq org-capture-templates
+                  `(("i" "Inbox" entry  (file "~/Dropbox/gtd/inbox.org")
+                     ,(concat "* TODO %?\n"
+                              "/Entered on/ %U")))))
+
+
+;; (setq mixed-pitch-set-height t)
+;; (add-hook! org-mode (mixed-pitch-mode))
+
+(setq org-hide-emphasis-markers t)
+
+(setq org-pomodoro-keep-killed-time t)
+(setq org-pomodoro-keep-killed-pomodoro-time t)
+(setq org-journal-dir "~/Dropbox/journal")
+(setq org-startup-folded t)
+
+(setq org-agenda-custom-commands
+      '(("3" "cis380" tags-todo "cis380")
+        ("u" "urbs420" tags-todo "urbs420")
+        ("i" "inbox" tags-todo "inbox")
+        ))
+
+(setq js-indent-level 2)
+(setq typescript-indent-level 2)
+(setq web-mode-code-indent-offset 2
+      web-mode-markup-indent-offset 2)
+
+;; (setq company-idle-delay 0)
+;; (after! lsp-ui-mode ((setq lsp-ui-sideline-delay 0.5)
+;;                      (setq lsp-ui-sideline-show-hover t)))
+(setq +format-with-lsp nil)
+(setq-default c-basic-offset 4)
+(remove-hook! before-save-hook (+format-buffer-h))
+
+(defun hello-world ()
+  "My first elisp function!"
+  (interactive)
+  (message "Hello World!"))
+
+(defun senior-design-terminals ()
+  "Opens the terminals for senior design"
+  (interactive)
+  ;; Open and set up the api terminal
+  (call-interactively `doom/window-maximize-buffer)
+  (call-interactively `+vterm/here)
+  (end-of-buffer)
+  (vterm-send-string "cd ~/code/wigo/api\n")
+  (vterm-send-string "yarn start\n")
+
+  ;; Split and move terminals
+  (call-interactively `evil-window-vsplit)
+  (evil-force-normal-state)
+
+  ;; Set up the mobile terminal
+  (call-interactively `+vterm/here)
+  (end-of-buffer)
+  (vterm-send-string "cd ~/code/wigo/mobile\n")
+  (vterm-send-string "yarn start\n")
+  (evil-force-normal-state)
+
+  ;; Save the window configuration and return
+  (window-configuration-to-register ?a)
+  (message "Done!")
+  )
+
+(defun penn-os-terminals ()
+  "Opens the terminals for penn-os"
+  (interactive)
+  ;; Open and set up the api terminal
+  (call-interactively `doom/window-maximize-buffer)
+  (call-interactively `+vterm/here)
+  (end-of-buffer)
+  (vterm-send-string "cd ~/code/cis380/20fa-project-2-group-14\n")
+  (vterm-send-string "vagrant up && vagrant ssh\n")
+  (vterm-send-string "cd /vagrant/20fa-project-2-group-14\n")
+
+  ;; Save the window configuration and return
+  (window-configuration-to-register ?a)
+  (message "Done!")
+  )
+
+(map! :leader
+      :desc "Open senior design terminals"  :m "o s" 'senior-design-terminals)
+;; (map! :leader
+;;       :desc "Open penn-os terminals"  :m "o 3" 'penn-os-terminals)
+
 (add-hook! nov-mode
   (setq visual-fill-column-mode t)
   (setq visual-fill-column-center-text t)
@@ -65,33 +158,11 @@
 
 (after! fill-column (setq visual-fill-column-center-text t))
 
-;; configure ivy posframe
-;; (after! ivy-posframe
-;;   (setf (alist-get t ivy-posframe-display-functions-alist)
-;;         #'ivy-posframe-display-at-frame-top-center))
-(after! ivy-posframe
-  (ivy-posframe-mode -1))
 
 (setq-default line-spacing 4)
 
 (setq evil-vsplit-window-right t
       evil-split-window-below t)
-
-(setq js-indent-level 2)
-(setq typescript-indent-level 2)
-(setq web-mode-code-indent-offset 2
-      web-mode-markup-indent-offset 2)
-
-(setq company-idle-delay 0)
-(after! lsp-ui-mode ((setq lsp-ui-sideline-delay 0.5)
-                     (setq lsp-ui-sideline-show-hover t)))
-(setq +format-with-lsp nil)
-(setq-default c-basic-offset 4)
-
-(setq org-roam-directory "~/Dropbox/notes")
-(setq visual-fill-column-center-text t)
-
-(add-hook! org-mode (visual-fill-column-mode))
 
 (defun magit-refresh-maybe ()
   (dolist (buf (doom-buffers-in-mode 'magit-status-mode))
@@ -99,18 +170,3 @@
       (magit-refresh-buffer))))
 
 (run-with-idle-timer 3 t #'magit-refresh-maybe)
-
-(setq +mu4e-mu4e-mail-path "~/mail")
-;; Each path is relative to `+mu4e-mu4e-mail-path', which is ~/.mail by default
-(set-email-account! "me@zusoomro.com"
-                    '((mu4e-sent-folder       . "/mailbox/Sent")
-                      (mu4e-drafts-folder     . "/mailbox/Drafts")
-                      (mu4e-trash-folder      . "/mailbox/Trash")
-                      (mu4e-refile-folder     . "/mailbox/INBOX")
-                      (smtpmail-smtp-user     . "me@zusoomro.com")
-                      (user-mail-address      . "me@zusoomro.com"))    ;; only needed for mu < 1.4
-                    t)
-(setq
- message-send-mail-function   'smtpmail-send-it
- smtpmail-default-smtp-server "smtp.fastmail.com"
- smtpmail-smtp-server         "smtp.fastmail.com")
