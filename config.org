@@ -29,7 +29,7 @@
 ;; there are two ways to load a theme. both assume the theme is installed and
 ;; available. you can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. this is the default:
-(setq doom-theme 'doom-one-light)
+(setq doom-theme 'doom-one)
 
 ;; some favorite themes:
 ;; - doom-one-light
@@ -37,9 +37,6 @@
 ;; - doom-henna
 ;; - doom-oceanic-next
 
-;; if you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. it must be set before org loads!
-(setq org-directory "~/Dropbox/notes")
 
 ;; this determines the style of line numbers in effect. if set to `nil', line
 ;; numbers are disabled. for relative line numbers, set this to `relative'.
@@ -64,57 +61,48 @@
 ;; they are implemented.
 #+end_src
 
-* Org
-
-#+begin_src emacs-lisp
-(setq org-roam-directory "~/Dropbox/notes")
+* Appearance
+#+begin_src elisp
 (setq visual-fill-column-center-text t)
+(setq-default line-spacing 4)
+(add-hook! 'window-setup-hook 'toggle-frame-fullscreen)
+#+end_src
+* Org
+** Set locations for org packages
+Point all packages to the correct location.
+#+begin_src elisp
+;; if you use `org' and don't want your org files in the default location below,
+;; change `org-directory'. it must be set before org loads!
+(setq org-directory "~/Dropbox/notes")
 
-(add-hook! org-mode (visual-fill-column-mode))
-
+(setq org-roam-directory "~/Dropbox/notes")
 (setq org-agenda-files `("~/Dropbox/gtd/agenda.org"
                          "~/Dropbox/gtd/projects.org"
                          "~/Dropbox/gtd/inbox.org"))
-
-(after! org (setq org-capture-templates
-                  `(("i" "Inbox" entry  (file "~/Dropbox/gtd/inbox.org")
-                     ,(concat "* TODO %?\n"
-                              "/Entered on/ %U")))))
-
-
-;; (setq mixed-pitch-set-height t)
-;; (add-hook! org-mode (mixed-pitch-mode))
-
-(setq org-hide-emphasis-markers t)
-
-(setq org-pomodoro-keep-killed-time t)
-(setq org-pomodoro-keep-killed-pomodoro-time t)
 (setq org-journal-dir "~/Dropbox/journal")
-(setq org-startup-folded t)
-
-                                        ; This isn't working, not sure why...
-(setq org-tag-persistent-alist '(
-                                 (:startgroup . nil)
-                                 ("cis380" . ?c)
-                                 ("cis400" . ?C)
-                                 ("urbs420" . ?u)
-                                 ("econ045" . ?e)
-                                 ("lgst202" . ?l)
-                                 (:endgroup . nil)
-                                 (:newline . nil)
-                                 ("career" . ?c)
-                                 ("personal" . ?p)
-                                 ("school" . ?s)
-                                 ("social" . ?S)
-                                 ("TA" . ?t)
-                                 ))
-
 (setq org-archive-location "~/Dropbox/gtd/archive.org::datetree/")
 #+end_src
-
-#+begin_src emacs-lisp
-(map! [remap org-set-tags-command] nil)
-
+** Appearance
+#+begin_src elisp
+(add-hook! org-mode (visual-fill-column-mode))
+(setq org-startup-folded t)
+(setq org-hide-emphasis-markers t)
+;; (setq mixed-pitch-set-height t)
+;; (add-hook! org-mode (mixed-pitch-mode))
+#+end_src
+** Org-pomodoro
+#+begin_src elisp
+(setq org-pomodoro-keep-killed-time t)
+(setq org-pomodoro-keep-killed-pomodoro-time t)
+#+end_src
+** Org-noter
+#+begin_src elisp
+(after! (pdf-tools org-noter)
+  (map! :map pdf-view-mode-map
+        :n "i" #'org-noter-insert-note))
+#+end_src
+** Org-agenda
+#+begin_src elisp
 (setq org-agenda-custom-commands
       '(("c" "cis380" tags-todo "cis380")
         ("C" "cis400" tags-todo "cis400")
@@ -122,14 +110,35 @@
         ("e" "econ045" tags-todo "econ045")
         ("l" "lgst202" tags-todo "lgst202")
         ("i" "inbox" tags-todo "inbox")
+        ("p" "projects" tags-todo "projects")
         ))
 #+end_src
+** Tags
+#+begin_src elisp
+(setq org-tag-persistent-alist '(
+                                 (:startgroup . nil)
+                                 ("cis380" . ?c)
+                                 ("cis400" . ?C)
+                                 ("urbs420" . ?u)
+                                 ("econ045" . ?e)
+                                 ("lgst202" . ?l)
+                                 (:newline . nil)
+                                 ("work" . ?w)
+                                 ("personal" . ?p)
+                                 ("school" . ?s)
+                                 ("social" . ?S)
+                                 ("TA" . ?t)
+                                 ))
 
-#+RESULTS:
-| 3 | cis380  | tags-todo | cis380  |
-| u | urbs420 | tags-todo | urbs420 |
-| i | inbox   | tags-todo | inbox   |
-
+(map! [remap org-set-tags-command] nil)
+#+end_src
+** Capture
+#+begin_src elisp
+(after! org (setq org-capture-templates
+                  `(("i" "Inbox" entry  (file "~/Dropbox/gtd/inbox.org")
+                     ,(concat "* TODO %?\n"
+                              "/Entered on/ %U")))))
+#+end_src
 * JS/TS/Web
 Making sure all my indents are set to 2.
 #+begin_src emacs-lisp
@@ -140,25 +149,70 @@ Making sure all my indents are set to 2.
 #+end_src
 
 * General lsp + code
-* Magit
+#+begin_src emacs-lisp
+(after! java-mode (setq c-basic-offset 4))
+#+end_src
+* Misc
 
+#+begin_src emacs-lisp
+(add-hook! nov-mode
+  (setq visual-fill-column-mode t)
+  (setq visual-fill-column-center-text t)
+  (setq line-spacing 4))
+
+(add-hook! writeroom-mode (doom/reset-font-size))
+
+(after! fill-column (setq visual-fill-column-center-text t))
+
+
+
+(setq evil-vsplit-window-right t
+      evil-split-window-below t)
+
+#+end_src
+
+* Mu4e
+
+Followed this link for setup:
+https://rakhim.org/fastmail-setup-with-emacs-mu4e-and-mbsync-on-macos/
+
+#+begin_src elisp
+(after! mu4e
+  (setq +mu4e-mu4e-mail-path "~/Maildir")
+  ;; Each path is relative to `+mu4e-mu4e-mail-path', which is ~/.mail by default
+  (set-email-account! "me@zusoomro.com"
+                      '((mu4e-sent-folder       . "/Sent")
+                        (mu4e-drafts-folder     . "/Drafts")
+                        (mu4e-trash-folder      . "/Trash")
+                        (mu4e-refile-folder     . "/INBOX")
+                        (smtpmail-smtp-user     . "me@zusoomro.com")
+                        (user-mail-address      . "me@zusoomro.com"))    ;; only needed for mu < 1.4
+                      t)
+  (setq
+   message-send-mail-function   'smtpmail-send-it
+   smtpmail-default-smtp-server "smtp.fastmail.com"
+   smtpmail-smtp-server         "smtp.fastmail.com")
+  )
+#+end_src
+
+* My elisp
+** Hello world!
+#+begin_src elisp
+(defun hello-world ()
+  "My first elisp function!"
+  (interactive)
+  (message "Hello World!"))
+#+end_src
+** Refresh Magit
 #+begin_src elisp
 (defun magit-refresh-maybe ()
   (dolist (buf (doom-buffers-in-mode 'magit-status-mode))
     (with-current-buffer buf
       (magit-refresh-buffer))))
-
 (run-with-idle-timer 3 t #'magit-refresh-maybe)
 #+end_src
-
-* Senior Design Scripts
-
-#+begin_src emacs-lisp
-(defun hello-world ()
-  "My first elisp function!"
-  (interactive)
-  (message "Hello World!"))
-
+** CIS400 terminals
+#+begin_src elisp
 (defun senior-design-terminals ()
   "Opens the terminals for senior design"
   (interactive)
@@ -184,7 +238,11 @@ Making sure all my indents are set to 2.
   (window-configuration-to-register ?a)
   (message "Done!")
   )
-
+(map! :leader
+      :desc "Open senior design terminals"  :m "o C" 'senior-design-terminals)
+#+end_src
+** CIS380 terminals
+#+begin_src elisp
 (defun penn-os-terminals ()
   "Opens the terminals for penn-os"
   (interactive)
@@ -201,52 +259,6 @@ Making sure all my indents are set to 2.
   (window-configuration-to-register ?a)
   (message "Done!")
   )
-
-(map! :leader
-      :desc "Open senior design terminals"  :m "o C" 'senior-design-terminals)
 (map! :leader
       :desc "Open penn-os terminals"  :m "o c" 'penn-os-terminals)
-#+end_src
-* Misc
-#+begin_src emacs-lisp
-(add-hook! nov-mode
-  (setq visual-fill-column-mode t)
-  (setq visual-fill-column-center-text t)
-  (setq line-spacing 4))
-
-(add-hook! writeroom-mode (doom/reset-font-size))
-
-(after! fill-column (setq visual-fill-column-center-text t))
-
-
-(setq-default line-spacing 4)
-
-(setq evil-vsplit-window-right t
-      evil-split-window-below t)
-
-(add-hook! 'window-setup-hook 'toggle-frame-maximized)
-#+end_src
-
-* Mu4e
-
-Followed this link for setup:
-https://rakhim.org/fastmail-setup-with-emacs-mu4e-and-mbsync-on-macos/
-
-#+begin_src elisp
-(after! mu4e
-  (setq +mu4e-mu4e-mail-path "~/Maildir")
-  ;; Each path is relative to `+mu4e-mu4e-mail-path', which is ~/.mail by default
-  (set-email-account! "me@zusoomro.com"
-                      '((mu4e-sent-folder       . "/Sent")
-                        (mu4e-drafts-folder     . "/Drafts")
-                        (mu4e-trash-folder      . "/Trash")
-                        (mu4e-refile-folder     . "/INBOX")
-                        (smtpmail-smtp-user     . "me@zusoomro.com")
-                        (user-mail-address      . "me@zusoomro.com"))    ;; only needed for mu < 1.4
-                      t)
-  (setq
-   message-send-mail-function   'smtpmail-send-it
-   smtpmail-default-smtp-server "smtp.fastmail.com"
-   smtpmail-smtp-server         "smtp.fastmail.com")
-  )
 #+end_src

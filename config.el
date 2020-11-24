@@ -22,7 +22,7 @@
 ;; there are two ways to load a theme. both assume the theme is installed and
 ;; available. you can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. this is the default:
-(setq doom-theme 'doom-one-light)
+(setq doom-theme 'doom-one)
 
 ;; some favorite themes:
 ;; - doom-one-light
@@ -30,9 +30,6 @@
 ;; - doom-henna
 ;; - doom-oceanic-next
 
-;; if you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. it must be set before org loads!
-(setq org-directory "~/Dropbox/notes")
 
 ;; this determines the style of line numbers in effect. if set to `nil', line
 ;; numbers are disabled. for relative line numbers, set this to `relative'.
@@ -56,51 +53,54 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-(setq org-roam-directory "~/Dropbox/notes")
+(setq js-indent-level 2)
+(setq typescript-indent-level 2)
+(setq web-mode-code-indent-offset 2
+      web-mode-markup-indent-offset 2)
+
+(after! java-mode (setq c-basic-offset 4))
+
+(add-hook! nov-mode
+  (setq visual-fill-column-mode t)
+  (setq visual-fill-column-center-text t)
+  (setq line-spacing 4))
+
+(add-hook! writeroom-mode (doom/reset-font-size))
+
+(after! fill-column (setq visual-fill-column-center-text t))
+
+
+
+(setq evil-vsplit-window-right t
+      evil-split-window-below t)
+
 (setq visual-fill-column-center-text t)
+(setq-default line-spacing 4)
+(add-hook! 'window-setup-hook 'toggle-frame-fullscreen)
 
-(add-hook! org-mode (visual-fill-column-mode))
+;; if you use `org' and don't want your org files in the default location below,
+;; change `org-directory'. it must be set before org loads!
+(setq org-directory "~/Dropbox/notes")
 
+(setq org-roam-directory "~/Dropbox/notes")
 (setq org-agenda-files `("~/Dropbox/gtd/agenda.org"
                          "~/Dropbox/gtd/projects.org"
                          "~/Dropbox/gtd/inbox.org"))
+(setq org-journal-dir "~/Dropbox/journal")
+(setq org-archive-location "~/Dropbox/gtd/archive.org::datetree/")
 
-(after! org (setq org-capture-templates
-                  `(("i" "Inbox" entry  (file "~/Dropbox/gtd/inbox.org")
-                     ,(concat "* TODO %?\n"
-                              "/Entered on/ %U")))))
-
-
+(add-hook! org-mode (visual-fill-column-mode))
+(setq org-startup-folded t)
+(setq org-hide-emphasis-markers t)
 ;; (setq mixed-pitch-set-height t)
 ;; (add-hook! org-mode (mixed-pitch-mode))
 
-(setq org-hide-emphasis-markers t)
-
 (setq org-pomodoro-keep-killed-time t)
 (setq org-pomodoro-keep-killed-pomodoro-time t)
-(setq org-journal-dir "~/Dropbox/journal")
-(setq org-startup-folded t)
 
-                                        ; This isn't working, not sure why...
-(setq org-tag-persistent-alist '(
-                                 (:startgroup . nil)
-                                 ("cis380" . ?c)
-                                 ("cis400" . ?C)
-                                 ("urbs420" . ?u)
-                                 ("econ045" . ?e)
-                                 ("lgst202" . ?l)
-                                 (:endgroup . nil)
-                                 (:newline . nil)
-                                 ("career" . ?c)
-                                 ("personal" . ?p)
-                                 ("school" . ?s)
-                                 ("social" . ?S)
-                                 ("TA" . ?t)
-                                 ))
-
-(setq org-archive-location "~/Dropbox/gtd/archive.org::datetree/")
-
-(map! [remap org-set-tags-command] nil)
+(after! (pdf-tools org-noter)
+  (map! :map pdf-view-mode-map
+        :n "i" #'org-noter-insert-note))
 
 (setq org-agenda-custom-commands
       '(("c" "cis380" tags-todo "cis380")
@@ -109,17 +109,58 @@
         ("e" "econ045" tags-todo "econ045")
         ("l" "lgst202" tags-todo "lgst202")
         ("i" "inbox" tags-todo "inbox")
+        ("p" "projects" tags-todo "projects")
         ))
 
-(setq js-indent-level 2)
-(setq typescript-indent-level 2)
-(setq web-mode-code-indent-offset 2
-      web-mode-markup-indent-offset 2)
+(setq org-tag-persistent-alist '(
+                                 (:startgroup . nil)
+                                 ("cis380" . ?c)
+                                 ("cis400" . ?C)
+                                 ("urbs420" . ?u)
+                                 ("econ045" . ?e)
+                                 ("lgst202" . ?l)
+                                 (:newline . nil)
+                                 ("work" . ?w)
+                                 ("personal" . ?p)
+                                 ("school" . ?s)
+                                 ("social" . ?S)
+                                 ("TA" . ?t)
+                                 ))
+
+(map! [remap org-set-tags-command] nil)
+
+(after! org (setq org-capture-templates
+                  `(("i" "Inbox" entry  (file "~/Dropbox/gtd/inbox.org")
+                     ,(concat "* TODO %?\n"
+                              "/Entered on/ %U")))))
+
+(after! mu4e
+  (setq +mu4e-mu4e-mail-path "~/Maildir")
+  ;; Each path is relative to `+mu4e-mu4e-mail-path', which is ~/.mail by default
+  (set-email-account! "me@zusoomro.com"
+                      '((mu4e-sent-folder       . "/Sent")
+                        (mu4e-drafts-folder     . "/Drafts")
+                        (mu4e-trash-folder      . "/Trash")
+                        (mu4e-refile-folder     . "/INBOX")
+                        (smtpmail-smtp-user     . "me@zusoomro.com")
+                        (user-mail-address      . "me@zusoomro.com"))    ;; only needed for mu < 1.4
+                      t)
+  (setq
+   message-send-mail-function   'smtpmail-send-it
+   smtpmail-default-smtp-server "smtp.fastmail.com"
+   smtpmail-smtp-server         "smtp.fastmail.com")
+  )
 
 (defun hello-world ()
   "My first elisp function!"
   (interactive)
   (message "Hello World!"))
+
+(defun magit-refresh-maybe ()
+  (dolist (buf (doom-buffers-in-mode 'magit-status-mode))
+    (with-current-buffer buf
+      (magit-refresh-buffer))))
+(run-with-idle-timer 3 t #'magit-refresh-maybe)
 
 (defun senior-design-terminals ()
   "Opens the terminals for senior design"
@@ -146,6 +187,8 @@
   (window-configuration-to-register ?a)
   (message "Done!")
   )
+(map! :leader
+      :desc "Open senior design terminals"  :m "o C" 'senior-design-terminals)
 
 (defun penn-os-terminals ()
   "Opens the terminals for penn-os"
@@ -163,49 +206,5 @@
   (window-configuration-to-register ?a)
   (message "Done!")
   )
-
-(map! :leader
-      :desc "Open senior design terminals"  :m "o C" 'senior-design-terminals)
 (map! :leader
       :desc "Open penn-os terminals"  :m "o c" 'penn-os-terminals)
-
-(add-hook! nov-mode
-  (setq visual-fill-column-mode t)
-  (setq visual-fill-column-center-text t)
-  (setq line-spacing 4))
-
-(add-hook! writeroom-mode (doom/reset-font-size))
-
-(after! fill-column (setq visual-fill-column-center-text t))
-
-
-(setq-default line-spacing 4)
-
-(setq evil-vsplit-window-right t
-      evil-split-window-below t)
-
-(add-hook! 'window-setup-hook 'toggle-frame-maximized)
-
-(defun magit-refresh-maybe ()
-  (dolist (buf (doom-buffers-in-mode 'magit-status-mode))
-    (with-current-buffer buf
-      (magit-refresh-buffer))))
-
-(run-with-idle-timer 3 t #'magit-refresh-maybe)
-
-(after! mu4e
-  (setq +mu4e-mu4e-mail-path "~/Maildir")
-  ;; Each path is relative to `+mu4e-mu4e-mail-path', which is ~/.mail by default
-  (set-email-account! "me@zusoomro.com"
-                      '((mu4e-sent-folder       . "/Sent")
-                        (mu4e-drafts-folder     . "/Drafts")
-                        (mu4e-trash-folder      . "/Trash")
-                        (mu4e-refile-folder     . "/INBOX")
-                        (smtpmail-smtp-user     . "me@zusoomro.com")
-                        (user-mail-address      . "me@zusoomro.com"))    ;; only needed for mu < 1.4
-                      t)
-  (setq
-   message-send-mail-function   'smtpmail-send-it
-   smtpmail-default-smtp-server "smtp.fastmail.com"
-   smtpmail-smtp-server         "smtp.fastmail.com")
-  )
