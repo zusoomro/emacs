@@ -80,14 +80,17 @@
 
 ;; if you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. it must be set before org loads!
-(setq org-directory "~/Dropbox/notes")
 
-(setq org-roam-directory "~/Dropbox/notes")
-(setq org-agenda-files `("~/Dropbox/gtd/agenda.org"
-                         "~/Dropbox/gtd/projects.org"
-                         "~/Dropbox/gtd/inbox.org"))
-(setq org-journal-dir "~/Dropbox/journal")
-(setq org-archive-location "~/Dropbox/gtd/archive.org::datetree/")
+(setq root-directory "~/Dropbox")
+(setq gtd-directory (concat root-directory "/gtd"))
+(setq notes-directory (concat root-directory "/notes"))
+(setq journal-directory (concat root-directory "/journal"))
+
+(setq org-directory notes-directory)
+(setq org-roam-directory notes-directory)
+(setq org-agenda-files gtd-directory)
+(setq org-journal-dir journal-directory)
+(setq org-archive-location (concat gtd-directory "/archive.org_archive::datetree/"))
 
 (add-hook! org-mode (visual-fill-column-mode))
 (setq org-startup-folded t)

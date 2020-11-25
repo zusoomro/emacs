@@ -19,36 +19,36 @@
        ;;japanese
 
        :completion
-       (company +childframe)          ; the ultimate code completion backend
-       ;;helm              ; the *other* search engine for love and life
-       ;;ido               ; the other *other* search engine...
+       (company +childframe)    ; the ultimate code completion backend
+       ;;helm                   ; the *other* search engine for love and life
+       ;;ido                    ; the other *other* search engine...
        (ivy +icons)             ; a search engine for love and life
 
 
        :ui
-       deft              ; notational velocity for Emacs
-       doom              ; what makes DOOM look the way it does
-       doom-dashboard    ; a nifty splash screen for Emacs
-       doom-quit         ; DOOM quit-message prompts when you quit Emacs
-       ;;fill-column       ; a `fill-column' indicator
-       hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
+       deft                     ; notational velocity for Emacs
+       doom                     ; what makes DOOM look the way it does
+       doom-dashboard           ; a nifty splash screen for Emacs
+       doom-quit                ; DOOM quit-message prompts when you quit Emacs
+       ;;fill-column            ; a `fill-column' indicator
+       hl-todo                  ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
        ;;hydra
-       ;;indent-guides     ; highlighted indent columns
-       ;; minimap           ; show a map of the code on the side
-       (modeline +light)         ; snazzy, Atom-inspired modeline, plus API
-       nav-flash         ; blink cursor line after big motions
-       neotree           ; a project drawer, like NERDTree for vim
-       ophints           ; highlight the region an operation acts on
-       (popup +defaults)   ; tame sudden yet inevitable temporary windows
-       ;;pretty-code       ; ligatures or substitute text with pretty symbols
-       ;;tabs              ; an tab bar for Emacs
-       treemacs          ; a project drawer, like neotree but cooler
-       ;;unicode           ; extended unicode support for various languages
-       vc-gutter         ; vcs diff in the fringe
-       vi-tilde-fringe   ; fringe tildes to mark beyond EOB
-       ;;window-select     ; visually switch windows
-       workspaces        ; tab emulation, persistence & separate workspaces
-       zen               ; distraction-free coding or writing
+       ;;indent-guides          ; highlighted indent columns
+       ;; minimap               ; show a map of the code on the side
+       (modeline +light)        ; snazzy, Atom-inspired modeline, plus API
+       nav-flash                ; blink cursor line after big motions
+       neotree                  ; a project drawer, like NERDTree for vim
+       ophints                  ; highlight the region an operation acts on
+       (popup +defaults)        ; tame sudden yet inevitable temporary windows
+       ;;pretty-code            ; ligatures or substitute text with pretty symbols
+       ;;tabs                   ; an tab bar for Emacs
+       treemacs                 ; a project drawer, like neotree but cooler
+       ;;unicode                ; extended unicode support for various languages
+       vc-gutter                ; vcs diff in the fringe
+       vi-tilde-fringe          ; fringe tildes to mark beyond EOB
+       ;;window-select          ; visually switch windows
+       workspaces               ; tab emulation, persistence & separate workspaces
+       zen                      ; distraction-free coding or writing
 
        :editor
        (evil +everywhere); come to the dark side, we have cookies
