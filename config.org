@@ -81,7 +81,7 @@ Point all packages to the correct location.
 
 (setq org-directory notes-directory)
 (setq org-roam-directory notes-directory)
-(setq org-agenda-files gtd-directory)
+(setq org-agenda-files `("~/Dropbox/gtd"))
 (setq org-journal-dir journal-directory)
 (setq org-archive-location (concat gtd-directory "/archive.org_archive::datetree/"))
 #+end_src
@@ -141,6 +141,10 @@ Point all packages to the correct location.
                   `(("i" "Inbox" entry  (file "~/Dropbox/gtd/inbox.org")
                      ,(concat "* TODO %?\n"
                               "/Entered on/ %U")))))
+#+end_src
+** Org-journal
+#+begin_src elisp
+(setq org-journal-file-format "%Y-%m-%d.org")
 #+end_src
 * JS/TS/Web
 Making sure all my indents are set to 2.

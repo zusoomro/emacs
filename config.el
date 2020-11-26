@@ -88,7 +88,7 @@
 
 (setq org-directory notes-directory)
 (setq org-roam-directory notes-directory)
-(setq org-agenda-files gtd-directory)
+(setq org-agenda-files `("~/Dropbox/gtd"))
 (setq org-journal-dir journal-directory)
 (setq org-archive-location (concat gtd-directory "/archive.org_archive::datetree/"))
 
@@ -136,6 +136,8 @@
                   `(("i" "Inbox" entry  (file "~/Dropbox/gtd/inbox.org")
                      ,(concat "* TODO %?\n"
                               "/Entered on/ %U")))))
+
+(setq org-journal-file-format "%Y-%m-%d.org")
 
 (after! mu4e
   (setq +mu4e-mu4e-mail-path "~/Maildir")
