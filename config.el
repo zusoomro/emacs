@@ -101,18 +101,30 @@
 (setq org-pomodoro-keep-killed-time t)
 (setq org-pomodoro-keep-killed-pomodoro-time t)
 
-(after! (pdf-tools org-noter)
-  (map! :map pdf-view-mode-map
-        :n "i" #'org-noter-insert-note))
+;; (after! (pdf-tools org-noter)
+;;   (map! :map pdf-view-mode-map
+;;         :n "i" #'org-noter-insert-note))
 
 (setq org-agenda-custom-commands
       '(("c" "cis380" tags-todo "cis380")
         ("C" "cis400" tags-todo "cis400")
         ("u" "urbs420" tags-todo "urbs420")
         ("e" "econ045" tags-todo "econ045")
-        ("l" "lgst202" tags-todo "lgst202")
+        ("l" "lgst206" tags-todo "lgst206")
         ("i" "inbox" tags-todo "inbox")
         ("p" "projects" tags-todo "projects")
+        ("h" "habits" tags-todo "STYlE=\"habit\"")
+        ("n" "next-actions" todo "STRT")
+        ("o" "Daily Agenda"
+         ((agenda "" (
+                      (org-agenda-span 1)
+                      (org-agenda-overriding-header "Agenda")
+                      (org-agenda-start-day ".")
+                      ))
+          (todo "STRT" ((org-agenda-overriding-header "Next actions"))))
+         ((org-agenda-block-separator nil)
+          (org-habit-show-habits nil))
+         )
         ))
 
 (setq org-tag-persistent-alist '(
@@ -121,7 +133,7 @@
                                  ("cis400" . ?C)
                                  ("urbs420" . ?u)
                                  ("econ045" . ?e)
-                                 ("lgst202" . ?l)
+                                 ("lgst206" . ?l)
                                  (:newline . nil)
                                  ("work" . ?w)
                                  ("personal" . ?p)
@@ -138,6 +150,8 @@
                               "/Entered on/ %U")))))
 
 (setq org-journal-file-format "%Y-%m-%d.org")
+
+(after! org (add-to-list 'org-modules 'org-habit t))
 
 (after! mu4e
   (setq +mu4e-mu4e-mail-path "~/Maildir")
@@ -213,3 +227,37 @@
   )
 (map! :leader
       :desc "Open penn-os terminals"  :m "o c" 'penn-os-terminals)
+
+(defvar my/org-habit-show-graphs-everywhere t
+  "If non-nil, show habit graphs in all types of agenda buffers.
+
+Normally, habits display consistency graphs only in
+\"agenda\"-type agenda buffers, not in other types of agenda
+buffers.  Set this variable to any non-nil variable to show
+consistency graphs in all Org mode agendas.")
+
+(defun my/org-agenda-mark-habits ()
+  "Mark all habits in current agenda for graph display.
+
+This function enforces `my/org-habit-show-graphs-everywhere' by
+marking all habits in the current agenda as such.  When run just
+before `org-agenda-finalize' (such as by advice; unfortunately,
+`org-agenda-finalize-hook' is run too late), this has the effect
+of displaying consistency graphs for these habits.
+
+When `my/org-habit-show-graphs-everywhere' is nil, this function
+has no effect."
+  (when (and my/org-habit-show-graphs-everywhere
+             (not (get-text-property (point) 'org-series)))
+    (let ((cursor (point))
+          item data)
+      (while (setq cursor (next-single-property-change cursor 'org-marker))
+        (setq item (get-text-property cursor 'org-marker))
+        (when (and item (org-is-habit-p item))
+          (with-current-buffer (marker-buffer item)
+            (setq data (org-habit-parse-todo item)))
+          (put-text-property cursor
+                             (next-single-property-change cursor 'org-marker)
+                             'org-habit-p data))))))
+
+(advice-add #'org-agenda-finalize :before #'my/org-agenda-mark-habits)
