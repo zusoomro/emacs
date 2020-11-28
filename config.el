@@ -16,13 +16,13 @@
 ;;
 ;; they all accept either a font-spec, font string ("input mono-12"), or xlfd
 ;; font string. you generally only need these two:
-(setq doom-font (font-spec :family "JetBrains Mono" :size 13)
-      doom-variable-pitch-font (font-spec :family "JetBrains Mono" :size 15))
+(setq doom-font (font-spec :family "Fira Code" :size 13)
+      doom-variable-pitch-font (font-spec :family "ETBembo" :size 15))
 
 ;; there are two ways to load a theme. both assume the theme is installed and
 ;; available. you can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. this is the default:
-(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-one-light)
 
 ;; some favorite themes:
 ;; - doom-one-light
@@ -169,6 +169,8 @@
    smtpmail-default-smtp-server "smtp.fastmail.com"
    smtpmail-smtp-server         "smtp.fastmail.com")
   )
+
+(setq +workspaces-switch-project-function (lambda (_) (projectile-dired)))
 
 (defun hello-world ()
   "My first elisp function!"
