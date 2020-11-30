@@ -16,7 +16,7 @@
 ;;
 ;; they all accept either a font-spec, font string ("input mono-12"), or xlfd
 ;; font string. you generally only need these two:
-(setq doom-font (font-spec :family "Fira Code" :size 13)
+(setq doom-font (font-spec :family "JetBrains Mono" :size 13)
       doom-variable-pitch-font (font-spec :family "ETBembo" :size 15))
 
 ;; there are two ways to load a theme. both assume the theme is installed and
@@ -140,6 +140,7 @@
                                  ("school" . ?s)
                                  ("social" . ?S)
                                  ("TA" . ?t)
+                                 ("vehicle" . ?v)
                                  ))
 
 (map! [remap org-set-tags-command] nil)
@@ -166,8 +167,11 @@
                       t)
   (setq
    message-send-mail-function   'smtpmail-send-it
+   send-mail-function   'smtpmail-send-it
    smtpmail-default-smtp-server "smtp.fastmail.com"
-   smtpmail-smtp-server         "smtp.fastmail.com")
+   smtpmail-smtp-server         "smtp.fastmail.com"
+   smtpmail-stream-type 'starttls
+   smtpmail-smtp-service 587)
   )
 
 (setq +workspaces-switch-project-function (lambda (_) (projectile-dired)))
