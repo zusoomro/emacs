@@ -275,7 +275,23 @@ https://rakhim.org/fastmail-setup-with-emacs-mu4e-and-mbsync-on-macos/
                         (mu4e-trash-folder      . "/Trash")
                         (mu4e-refile-folder     . "/INBOX")
                         (smtpmail-smtp-user     . "me@zusoomro.com")
-                        (user-mail-address      . "me@zusoomro.com"))    ;; only needed for mu < 1.4
+                        (user-mail-address      . "me@zusoomro.com")
+                        (smtpmail-default-smtp-server . "smtp.fastmail.com")
+                        (smtpmail-smtp-server         . "smtp.fastmail.com")
+                        (smtpmail-stream-type . 'starttls)
+                        (smtpmail-smtp-service . 587))
+                      t)
+  (set-email-account! "zusoomro@seas.upenn.edu"
+                      '((mu4e-sent-folder       . "/seas/[Gmail]/Sent Mail")
+                        (mu4e-drafts-folder     . "/seas/[Gmail]/Drafts")
+                        (mu4e-trash-folder      . "/seas/[Gmail]/Trash")
+                        (mu4e-refile-folder     . "/seas/INBOX")
+                        (smtpmail-smtp-user     . "zusoomro@seas.upenn.edu")
+                        (user-mail-address      . "zusoomro@seas.upenn.edu")
+                        (smtpmail-default-smtp-server . "smtp.gmail.com")
+                        (smtpmail-smtp-server         . "smtp.gmail.com")
+                        (smtpmail-stream-type . ssl)
+                        (smtpmail-smtp-service . 465))
                       t)
   (setq
    message-send-mail-function   'smtpmail-send-it
