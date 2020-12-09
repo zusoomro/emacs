@@ -51,3 +51,5 @@
 
 (package! nov)
 (package! org-super-agenda)
+(package! org-caldav)
+(package! org-drill)

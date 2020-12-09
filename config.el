@@ -17,12 +17,12 @@
 ;; they all accept either a font-spec, font string ("input mono-12"), or xlfd
 ;; font string. you generally only need these two:
 (setq doom-font (font-spec :family "JetBrains Mono" :size 13)
-      doom-variable-pitch-font (font-spec :family "ETBembo" :size 15))
+      doom-variable-pitch-font (font-spec :family "JetBrains Mono" :size 13))
 
 ;; there are two ways to load a theme. both assume the theme is installed and
 ;; available. you can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. this is the default:
-(setq doom-theme 'doom-one-light)
+(setq doom-theme 'doom-one)
 
 ;; some favorite themes:
 ;; - doom-one-light
@@ -74,9 +74,21 @@
 (setq evil-vsplit-window-right t
       evil-split-window-below t)
 
+(setq delete-by-moving-to-trash t)
+
+(remove-hook 'doom-first-buffer-hook #'global-hl-line-mode)
+
+(setq mac-right-option-modifier 'meta)
+(setq mac-right-command-modifier 'meta)
+
+(setq swiper-use-visual-line-p #'ignore)
+
+(map! :g "C-s" #'swiper-isearch)
+(map! :g "C-r" #'swiper-isearch-backward)
+
 (setq visual-fill-column-center-text t)
 (setq-default line-spacing 4)
-(add-hook! 'window-setup-hook 'toggle-frame-fullscreen)
+;; (add-hook! 'window-setup-hook 'toggle-frame-fullscreen)
 
 ;; if you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. it must be set before org loads!
@@ -146,37 +158,60 @@
 (map! [remap org-set-tags-command] nil)
 
 (after! org (setq org-capture-templates
-                  `(("i" "Inbox" entry  (file "~/Dropbox/gtd/inbox.org")
+                  `(("i" "Inbox" entry (file "~/Dropbox/gtd/inbox.org")
                      ,(concat "* TODO %?\n"
-                              "/Entered on/ %U")))))
+                              "/Entered on/ %U"))
+                    ("I" "Inbox w/ attachment" entry (file "~/Dropbox/gtd/inbox.org")
+                     ,(concat "* TODO %?\n"
+                              "%a\n"
+                              "/Entered on/ %U"))
+                    )))
 
 (setq org-journal-file-format "%Y-%m-%d.org")
 
 (after! org (add-to-list 'org-modules 'org-habit t))
 
+(after! org-caldav
+  (setq
+   org-caldav-url "https://caldav.fastmail.com/dav/calendars/user/me@zusoomro.com/"
+   org-caldav-calendar-id "54b62cc0-e024-4081-a88a-14abdf81d875"
+   org-caldav-inbox (concat gtd-directory "/calendar.org")
+   org-caldav-backup-file nil
+   ))
+
+(setq +org-roam-open-buffer-on-find-file nil)
+
 (after! mu4e
-  (setq +mu4e-mu4e-mail-path "~/Maildir")
   ;; Each path is relative to `+mu4e-mu4e-mail-path', which is ~/.mail by default
-  (set-email-account! "me@zusoomro.com"
-                      '((mu4e-sent-folder       . "/Sent")
-                        (mu4e-drafts-folder     . "/Drafts")
-                        (mu4e-trash-folder      . "/Trash")
-                        (mu4e-refile-folder     . "/INBOX")
+  (setq mu4e-view-prefer-html t)
+  (setq fill-flowed-encode-column 998)
+  (setq mu4e-maildir-shortcuts '(
+                                 (:maildir "/me/Spam" :key ?S)
+                                 (:maildir "/seas/[Gmail]/Spam" :key ?s)
+                                 (:maildir "/me/INBOX" :key ?I)
+                                 (:maildir "/seas/INBOX" :key ?i)))
+  (setq +mu4e-mu4e-mail-path "~/.mail")
+  (set-email-account! "me"
+                      '((mu4e-sent-folder       . "/me/Sent")
+                        (mu4e-drafts-folder     . "/me/Drafts")
+                        (mu4e-trash-folder      . "/me/Trash")
+                        (mu4e-refile-folder     . "/me/Archive")
                         (smtpmail-smtp-user     . "me@zusoomro.com")
                         (user-mail-address      . "me@zusoomro.com")
                         (smtpmail-default-smtp-server . "smtp.fastmail.com")
                         (smtpmail-smtp-server         . "smtp.fastmail.com")
-                        (smtpmail-stream-type . 'starttls)
+                        (smtpmail-stream-type . starttls)
                         (smtpmail-smtp-service . 587))
                       t)
-  (set-email-account! "zusoomro@seas.upenn.edu"
+  (set-email-account! "seas"
                       '((mu4e-sent-folder       . "/seas/[Gmail]/Sent Mail")
                         (mu4e-drafts-folder     . "/seas/[Gmail]/Drafts")
                         (mu4e-trash-folder      . "/seas/[Gmail]/Trash")
-                        (mu4e-refile-folder     . "/seas/INBOX")
+                        (mu4e-refile-folder     . "/seas/[Gmail]/All Mail")
                         (smtpmail-smtp-user     . "zusoomro@seas.upenn.edu")
                         (user-mail-address      . "zusoomro@seas.upenn.edu")
                         (smtpmail-default-smtp-server . "smtp.gmail.com")
+                        (smtpmail-smtp-server         . "smtp.gmail.com")
                         (smtpmail-smtp-server         . "smtp.gmail.com")
                         (smtpmail-stream-type . ssl)
                         (smtpmail-smtp-service . 465))
@@ -188,7 +223,16 @@
    smtpmail-smtp-server         "smtp.fastmail.com"
    smtpmail-stream-type 'starttls
    smtpmail-smtp-service 587)
+  (add-to-list 'mu4e-bookmarks '("maildir:\"/me/INBOX\" OR maildir:\"/seas/INBOX\"" "Inboxes" ?i))
   )
+
+;; (add-hook! mu4e-view-mode
+;;   (visual-fill-column-mode)
+;;   (auto-fill-mode -1)
+;;   )
+(setq-hook! 'mu4e-view-mode visual-fill-column-center-text nil)
+
+(map! :map mu4e-headers-mode-map :n "/" `evil-ex-search-forward)
 
 (setq +workspaces-switch-project-function (lambda (_) (projectile-dired)))
 
@@ -211,6 +255,7 @@
   (call-interactively `+vterm/here)
   (end-of-buffer)
   (vterm-send-string "cd ~/code/wigo/api\n")
+  (vterm-send-string "source .env\n")
   (vterm-send-string "yarn start\n")
 
   ;; Split and move terminals
@@ -247,8 +292,8 @@
   (window-configuration-to-register ?a)
   (message "Done!")
   )
-(map! :leader
-      :desc "Open penn-os terminals"  :m "o c" 'penn-os-terminals)
+;; (map! :leader
+;;       :desc "Open penn-os terminals"  :m "o c" 'penn-os-terminals)
 
 (defvar my/org-habit-show-graphs-everywhere t
   "If non-nil, show habit graphs in all types of agenda buffers.
