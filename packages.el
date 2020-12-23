@@ -53,3 +53,4 @@
 (package! org-super-agenda)
 (package! org-caldav)
 (package! org-drill)
+(package! slack)

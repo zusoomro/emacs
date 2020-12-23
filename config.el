@@ -16,13 +16,13 @@
 ;;
 ;; they all accept either a font-spec, font string ("input mono-12"), or xlfd
 ;; font string. you generally only need these two:
-(setq doom-font (font-spec :family "JetBrains Mono" :size 13)
+(setq doom-font (font-spec :family "Fira Code" :size 13)
       doom-variable-pitch-font (font-spec :family "JetBrains Mono" :size 13))
 
 ;; there are two ways to load a theme. both assume the theme is installed and
 ;; available. you can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. this is the default:
-(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-one-light)
 
 ;; some favorite themes:
 ;; - doom-one-light
@@ -57,6 +57,11 @@
 (setq typescript-indent-level 2)
 (setq web-mode-code-indent-offset 2
       web-mode-markup-indent-offset 2)
+(after! lsp-mode (setq +format-with-lsp nil))
+(setq +format-with-lsp nil)
+(setq-hook! 'typescript-tsx-mode +format-with-lsp nil)
+(setq-hook! 'typescript-mode +format-with-lsp nil)
+(setq +default-want-RET-continue-comments nil)
 
 (after! java-mode (setq c-basic-offset 4))
 
@@ -76,15 +81,24 @@
 
 (setq delete-by-moving-to-trash t)
 
-(remove-hook 'doom-first-buffer-hook #'global-hl-line-mode)
+;;(remove-hook 'doom-first-buffer-hook #'global-hl-line-mode)
 
 (setq mac-right-option-modifier 'meta)
+(setq mac-command-modifier 'super)
 (setq mac-right-command-modifier 'meta)
+
+(map! :map dired-mode-map :g "-" `dired-up-directory)
 
 (setq swiper-use-visual-line-p #'ignore)
 
-(map! :g "C-s" #'swiper-isearch)
-(map! :g "C-r" #'swiper-isearch-backward)
+;;(map! :g "C-s" #'swiper-isearch)
+;;(map! :g "C-r" #'swiper-isearch-backward)
+
+(after! org
+  (map! :map org-mode-map :g "C-'" 'nil)
+  (map! :g "C-'" 'avy-goto-char)
+  )
+(avy-setup-default)
 
 (setq visual-fill-column-center-text t)
 (setq-default line-spacing 4)
@@ -117,6 +131,7 @@
 ;;   (map! :map pdf-view-mode-map
 ;;         :n "i" #'org-noter-insert-note))
 
+(setq org-agenda-dim-blocked-tasks nil)
 (setq org-agenda-custom-commands
       '(("c" "cis380" tags-todo "cis380")
         ("C" "cis400" tags-todo "cis400")
@@ -127,6 +142,7 @@
         ("p" "projects" tags-todo "projects")
         ("h" "habits" tags-todo "STYlE=\"habit\"")
         ("n" "next-actions" todo "STRT")
+        ("r" "routines" search "Routine")
         ("o" "Daily Agenda"
          ((agenda "" (
                       (org-agenda-span 1)
@@ -169,17 +185,21 @@
 
 (setq org-journal-file-format "%Y-%m-%d.org")
 
-(after! org (add-to-list 'org-modules 'org-habit t))
+(require 'org-checklist)
+(after! org (add-to-list 'org-modules 'org-habit t)
+  (add-to-list 'org-modules 'org-checklist t))
 
 (after! org-caldav
   (setq
    org-caldav-url "https://caldav.fastmail.com/dav/calendars/user/me@zusoomro.com/"
    org-caldav-calendar-id "54b62cc0-e024-4081-a88a-14abdf81d875"
-   org-caldav-inbox (concat gtd-directory "/calendar.org")
-   org-caldav-backup-file nil
+   org-caldav-inbox "~/Dropbox/gtd/calendar-two.org"
+   org-caldav-backup-file "~/Dropbox/gtd/calendar.org.bak"
    ))
 
 (setq +org-roam-open-buffer-on-find-file nil)
+
+(setq org-export-preserve-breaks t)
 
 (after! mu4e
   ;; Each path is relative to `+mu4e-mu4e-mail-path', which is ~/.mail by default
@@ -203,6 +223,19 @@
                         (smtpmail-stream-type . starttls)
                         (smtpmail-smtp-service . 587))
                       t)
+  (set-email-account! "gmail"
+                      '((mu4e-sent-folder       . "/gmail/[Gmail]/Sent Mail")
+                        (mu4e-drafts-folder     . "/gmail/[Gmail]/Drafts")
+                        (mu4e-trash-folder      . "/gmail/[Gmail]/Trash")
+                        (mu4e-refile-folder     . "/gmail/[Gmail]/All Mail")
+                        (smtpmail-smtp-user     . "zulfiqar0821@gmail.com")
+                        (user-mail-address      . "zulfiqar0821@gmail.com")
+                        (smtpmail-default-smtp-server . "smtp.gmail.com")
+                        (smtpmail-smtp-server         . "smtp.gmail.com")
+                        (smtpmail-smtp-server         . "smtp.gmail.com")
+                        (smtpmail-stream-type . ssl)
+                        (smtpmail-smtp-service . 465))
+                      t)
   (set-email-account! "seas"
                       '((mu4e-sent-folder       . "/seas/[Gmail]/Sent Mail")
                         (mu4e-drafts-folder     . "/seas/[Gmail]/Drafts")
@@ -223,7 +256,7 @@
    smtpmail-smtp-server         "smtp.fastmail.com"
    smtpmail-stream-type 'starttls
    smtpmail-smtp-service 587)
-  (add-to-list 'mu4e-bookmarks '("maildir:\"/me/INBOX\" OR maildir:\"/seas/INBOX\"" "Inboxes" ?i))
+  (add-to-list 'mu4e-bookmarks '("maildir:\"/me/INBOX\" OR maildir:\"/seas/INBOX\" OR maildir:\"/gmail/INBOX\"" "Inboxes" ?i))
   )
 
 ;; (add-hook! mu4e-view-mode
@@ -234,7 +267,60 @@
 
 (map! :map mu4e-headers-mode-map :n "/" `evil-ex-search-forward)
 
-(setq +workspaces-switch-project-function (lambda (_) (projectile-dired)))
+;; (setq +workspaces-switch-project-function (lambda (_) (projectile-dired)))
+
+(setq kill-whole-line t)
+
+;; config.el
+(use-package slack
+  :commands slack-start
+  :init
+  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
+  (setq slack-prefer-current-team t)
+  :config
+  (slack-register-team
+   :name "Senior Design"
+   :token (auth-source-pick-first-password
+           :host "seniordesign-hma6210.slack.com"
+           :user "me@zusoomro.com")
+   :subscribed-channels '((general random)))
+
+  (slack-register-team
+   :name "CIS557"
+   :token (auth-source-pick-first-password
+           :host "cis-557.slack.com"
+           :user "zusoomro@seas.upenn.edu")
+   :subscribed-channels '((general random)))
+
+  ;; (map! (:map slack-info-mode-map
+  ;;        "u" #'slack-room-update-messages)
+  ;;       (:map slack-mode-map
+  ;;        "C-n" 'slack-buffer-goto-next-message
+  ;;        "C-p" 'slack-buffer-goto-prev-message)
+  ;;       (:localleader
+  ;;        (:map slack-mode-map
+  ;;         "c" 'slack-buffer-kill
+  ;;         "ra" 'slack-message-add-reaction
+  ;;         "rr" 'slack-message-remove-reaction
+  ;;         "rs" 'slack-message-show-reaction-users
+  ;;         "pl" 'slack-room-pins-list
+  ;;         "pa" 'slack-message-pins-add
+  ;;         "pr" 'slack-message-pins-remove
+  ;;         "mm" 'slack-message-write-another-buffer
+  ;;         "me" 'slack-message-editp
+  ;;         "md" 'slack-message-delete
+  ;;         "u" 'slack-room-update-messages
+  ;;         "2" 'slack-message-embed-mention
+  ;;         "3" 'slack-message-embed-channel)
+  ;;        (:map slack-edit-message-mode-map
+  ;;         "k" 'slack-message-cancel-edit
+  ;;         "s" 'slack-message-send-from-buffer
+  ;;         "2" 'slack-message-embed-mention
+  ;;         "3" 'slack-message-embed-channel))))
+  )
+(use-package alert
+  :commands alert
+  :init (setq alert-default-style 'notifier))
 
 (defun hello-world ()
   "My first elisp function!"
@@ -259,22 +345,20 @@
   (vterm-send-string "yarn start\n")
 
   ;; Split and move terminals
-  (call-interactively `evil-window-vsplit)
-  (evil-force-normal-state)
+  (call-interactively `split-window-right)
 
   ;; Set up the mobile terminal
   (call-interactively `+vterm/here)
   (end-of-buffer)
   (vterm-send-string "cd ~/code/wigo/mobile\n")
   (vterm-send-string "yarn start\n")
-  (evil-force-normal-state)
 
   ;; Save the window configuration and return
   (window-configuration-to-register ?a)
   (message "Done!")
   )
 (map! :leader
-      :desc "Open senior design terminals"  :m "o C" 'senior-design-terminals)
+      :desc "Open senior design terminals"  :g "o C" 'senior-design-terminals)
 
 (defun penn-os-terminals ()
   "Opens the terminals for penn-os"
@@ -328,3 +412,13 @@ has no effect."
                              'org-habit-p data))))))
 
 (advice-add #'org-agenda-finalize :before #'my/org-agenda-mark-habits)
+
+(defun set-system-dark-mode ()
+  (interactive)
+  (if (string= (shell-command-to-string "printf %s \"$( osascript -e \'tell application \"System Events\" to tell appearance preferences to return dark mode\' )\"") "true")
+      (when (string= doom-theme "doom-one-light") (load-theme 'doom-one t))
+    (when (string= doom-theme "doom-one") (load-theme 'doom-one-light t))
+    )
+  )
+
+(run-with-idle-timer 3 t #'set-system-dark-mode)

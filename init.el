@@ -46,16 +46,16 @@
        ;;unicode                ; extended unicode support for various languages
        vc-gutter                ; vcs diff in the fringe
        vi-tilde-fringe          ; fringe tildes to mark beyond EOB
-       window-select          ; visually switch windows
+       window-select           ; visually switch windows
        workspaces               ; tab emulation, persistence & separate workspaces
        zen                      ; distraction-free coding or writing
 
        :editor
-       ;; evil ;; +everywhere) ;; come to the dark side, we have cookies
+       ;; (evil +everywhere) ;; come to the dark side, we have cookies
        file-templates    ; auto-snippets for empty files
        fold              ; (nigh) universal code folding
        (format +onsave)  ; automated prettiness
-       ;;god               ; run Emacs commands without modifier keys
+       ;;god               ; run Emacs commands wihout modifier keys
        ;;lispy             ; vim for lisp, for people who don't like vim
        multiple-cursors  ; editing in many places at once
        ;;objed             ; text object editing for the innocent
@@ -68,7 +68,7 @@
        dired                    ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
        ;;ibuffer         ; interactive buffer management
-       undo              ; persistent, smarter undo for your inevitable mistakes
+       ;;undo              ; persistent, smarter undo for your inevitable mistakes
        vc                ; version-control and Emacs, sitting in a tree
 
        :term
