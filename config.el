@@ -1,40 +1,12 @@
-;; place your private configuration here! remember, you do not need to run 'doom
-;; sync' after modifying this file!
-
-;; some functionality uses this to identify you, e.g. gpg configuration, email
-;; clients, file templates and snippets.
 (setq user-full-name "Zulfiqar Soomro"
       user-mail-address "me@zusoomro.com")
 
-;; doom exposes five (optional) variables for controlling fonts in doom. here
-;; are the three important ones:
-;;
-;; + `doom-font'
-;; + `doom-variable-pitch-font'
-;; + `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;;
-;; they all accept either a font-spec, font string ("input mono-12"), or xlfd
-;; font string. you generally only need these two:
 (setq doom-font (font-spec :family "Fira Code" :size 13)
       doom-variable-pitch-font (font-spec :family "JetBrains Mono" :size 13))
 
-;; there are two ways to load a theme. both assume the theme is installed and
-;; available. you can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. this is the default:
 (setq doom-theme 'doom-one-light)
 
-;; some favorite themes:
-;; - doom-one-light
-;; - doom-city-lights
-;; - doom-henna
-;; - doom-oceanic-next
-
-
-;; this determines the style of line numbers in effect. if set to `nil', line
-;; numbers are disabled. for relative line numbers, set this to `relative'.
 (setq display-line-numbers-type nil)
-
 
 ;; here are some additional functions/macros that could help you configure doom:
 ;;
@@ -53,46 +25,10 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-(setq js-indent-level 2)
-(setq typescript-indent-level 2)
-(setq web-mode-code-indent-offset 2
-      web-mode-markup-indent-offset 2)
-(after! lsp-mode (setq +format-with-lsp nil))
-(setq +format-with-lsp nil)
-(setq-hook! 'typescript-tsx-mode +format-with-lsp nil)
-(setq-hook! 'typescript-mode +format-with-lsp nil)
-(setq +default-want-RET-continue-comments nil)
+(setq visual-fill-column-center-text t)
+(setq-default line-spacing 4)
 
-(after! java-mode (setq c-basic-offset 4))
-
-(add-hook! nov-mode
-  (setq visual-fill-column-mode t)
-  (setq visual-fill-column-center-text t)
-  (setq line-spacing 4))
-
-(add-hook! writeroom-mode (doom/reset-font-size))
-
-(after! fill-column (setq visual-fill-column-center-text t))
-
-
-
-(setq evil-vsplit-window-right t
-      evil-split-window-below t)
-
-(setq delete-by-moving-to-trash t)
-
-;;(remove-hook 'doom-first-buffer-hook #'global-hl-line-mode)
-
-(setq mac-right-option-modifier 'meta)
-(setq mac-command-modifier 'super)
-(setq mac-right-command-modifier 'meta)
-
-(map! :map dired-mode-map :g "-" `dired-up-directory)
-
-(setq swiper-use-visual-line-p #'ignore)
-
-;;(map! :g "C-s" #'swiper-isearch)
-;;(map! :g "C-r" #'swiper-isearch-backward)
+(setq kill-whole-line t)
 
 (after! org
   (map! :map org-mode-map :g "C-'" 'nil)
@@ -100,9 +36,10 @@
   )
 (avy-setup-default)
 
-(setq visual-fill-column-center-text t)
-(setq-default line-spacing 4)
-;; (add-hook! 'window-setup-hook 'toggle-frame-fullscreen)
+(setq swiper-use-visual-line-p #'ignore)
+
+;;(map! :g "C-s" #'swiper-isearch)
+;;(map! :g "C-r" #'swiper-isearch-backward)
 
 ;; if you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. it must be set before org loads!
@@ -211,6 +148,7 @@
                                  (:maildir "/me/INBOX" :key ?I)
                                  (:maildir "/seas/INBOX" :key ?i)))
   (setq +mu4e-mu4e-mail-path "~/.mail")
+
   (set-email-account! "me"
                       '((mu4e-sent-folder       . "/me/Sent")
                         (mu4e-drafts-folder     . "/me/Drafts")
@@ -223,6 +161,7 @@
                         (smtpmail-stream-type . starttls)
                         (smtpmail-smtp-service . 587))
                       t)
+
   (set-email-account! "gmail"
                       '((mu4e-sent-folder       . "/gmail/[Gmail]/Sent Mail")
                         (mu4e-drafts-folder     . "/gmail/[Gmail]/Drafts")
@@ -236,6 +175,7 @@
                         (smtpmail-stream-type . ssl)
                         (smtpmail-smtp-service . 465))
                       t)
+
   (set-email-account! "seas"
                       '((mu4e-sent-folder       . "/seas/[Gmail]/Sent Mail")
                         (mu4e-drafts-folder     . "/seas/[Gmail]/Drafts")
@@ -256,7 +196,8 @@
    smtpmail-smtp-server         "smtp.fastmail.com"
    smtpmail-stream-type 'starttls
    smtpmail-smtp-service 587)
-  (add-to-list 'mu4e-bookmarks '("maildir:\"/me/INBOX\" OR maildir:\"/seas/INBOX\" OR maildir:\"/gmail/INBOX\"" "Inboxes" ?i))
+
+  (add-to-list 'mu4e-bookmarks '("maildir:\"/me/INBOX\" OR  maildir:\"/seas/INBOX\" OR  maildir:\"/gmail/INBOX\"" "Inboxes" ?i))
   )
 
 ;; (add-hook! mu4e-view-mode
@@ -266,10 +207,6 @@
 (setq-hook! 'mu4e-view-mode visual-fill-column-center-text nil)
 
 (map! :map mu4e-headers-mode-map :n "/" `evil-ex-search-forward)
-
-;; (setq +workspaces-switch-project-function (lambda (_) (projectile-dired)))
-
-(setq kill-whole-line t)
 
 ;; config.el
 (use-package slack
@@ -322,18 +259,31 @@
   :commands alert
   :init (setq alert-default-style 'notifier))
 
-(defun hello-world ()
+(map! :map dired-mode-map :g "-" `dired-up-directory)
+
+(after! java-mode (setq c-basic-offset 4))
+(setq js-indent-level 2)
+(setq typescript-indent-level 2)
+(setq web-mode-code-indent-offset 2
+      web-mode-markup-indent-offset 2)
+(after! lsp-mode (setq +format-with-lsp nil))
+(setq +format-with-lsp nil)
+(setq-hook! 'typescript-tsx-mode +format-with-lsp nil)
+(setq-hook! 'typescript-mode +format-with-lsp nil)
+(setq +default-want-RET-continue-comments nil)
+
+(defun zulfi/hello-world ()
   "My first elisp function!"
   (interactive)
   (message "Hello World!"))
 
-(defun magit-refresh-maybe ()
+(defun zulfi/magit-refresh-maybe ()
   (dolist (buf (doom-buffers-in-mode 'magit-status-mode))
     (with-current-buffer buf
       (magit-refresh-buffer))))
-(run-with-idle-timer 3 t #'magit-refresh-maybe)
+(run-with-idle-timer 3 t #'zulfi/magit-refresh-maybe)
 
-(defun senior-design-terminals ()
+(defun zulfi/senior-design-terminals ()
   "Opens the terminals for senior design"
   (interactive)
   ;; Open and set up the api terminal
@@ -358,9 +308,10 @@
   (message "Done!")
   )
 (map! :leader
-      :desc "Open senior design terminals"  :g "o C" 'senior-design-terminals)
+      :desc "Open senior design terminals"  :g "o C"
+      'zulfi/senior-design-terminals)
 
-(defun penn-os-terminals ()
+(defun zulfi/penn-os-terminals ()
   "Opens the terminals for penn-os"
   (interactive)
   ;; Open and set up the api terminal
@@ -379,7 +330,7 @@
 ;; (map! :leader
 ;;       :desc "Open penn-os terminals"  :m "o c" 'penn-os-terminals)
 
-(defvar my/org-habit-show-graphs-everywhere t
+(defvar zulfi/org-habit-show-graphs-everywhere t
   "If non-nil, show habit graphs in all types of agenda buffers.
 
 Normally, habits display consistency graphs only in
@@ -387,18 +338,18 @@ Normally, habits display consistency graphs only in
 buffers.  Set this variable to any non-nil variable to show
 consistency graphs in all Org mode agendas.")
 
-(defun my/org-agenda-mark-habits ()
+(defun zulfi/org-agenda-mark-habits ()
   "Mark all habits in current agenda for graph display.
 
-This function enforces `my/org-habit-show-graphs-everywhere' by
+This function enforces `zulfi/org-habit-show-graphs-everywhere' by
 marking all habits in the current agenda as such.  When run just
 before `org-agenda-finalize' (such as by advice; unfortunately,
 `org-agenda-finalize-hook' is run too late), this has the effect
 of displaying consistency graphs for these habits.
 
-When `my/org-habit-show-graphs-everywhere' is nil, this function
+When `zulfi/org-habit-show-graphs-everywhere' is nil, this function
 has no effect."
-  (when (and my/org-habit-show-graphs-everywhere
+  (when (and zulfi/org-habit-show-graphs-everywhere
              (not (get-text-property (point) 'org-series)))
     (let ((cursor (point))
           item data)
@@ -411,9 +362,9 @@ has no effect."
                              (next-single-property-change cursor 'org-marker)
                              'org-habit-p data))))))
 
-(advice-add #'org-agenda-finalize :before #'my/org-agenda-mark-habits)
+(advice-add #'org-agenda-finalize :before #'zulfi/org-agenda-mark-habits)
 
-(defun set-system-dark-mode ()
+(defun zulfi/set-system-dark-mode ()
   (interactive)
   (if (string= (shell-command-to-string "printf %s \"$( osascript -e \'tell application \"System Events\" to tell appearance preferences to return dark mode\' )\"") "true")
       (when (string= doom-theme "doom-one-light") (load-theme 'doom-one t))
@@ -421,4 +372,20 @@ has no effect."
     )
   )
 
-(run-with-idle-timer 3 t #'set-system-dark-mode)
+(run-with-idle-timer 3 t #'zulfi/set-system-dark-mode)
+
+(add-hook! nov-mode
+  (setq visual-fill-column-mode t)
+  (setq visual-fill-column-center-text t)
+  (setq line-spacing 4))
+
+(add-hook! writeroom-mode (doom/reset-font-size))
+
+(after! fill-column (setq visual-fill-column-center-text t))
+
+
+
+;; (setq evil-vsplit-window-right t
+;;       evil-split-window-below t)
+
+(setq delete-by-moving-to-trash t)
