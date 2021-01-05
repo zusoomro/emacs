@@ -1,6 +1,6 @@
 #+title: Configuration
 #+startup: overview
-#+property: header-args :tangle yes :results none
+#+property: header-args :tangle yes :results silent
 
 * General
 
@@ -10,7 +10,7 @@
       user-mail-address "me@zusoomro.com")
 
 (setq doom-font (font-spec :family "Fira Code" :size 13)
-      doom-variable-pitch-font (font-spec :family "JetBrains Mono" :size 13))
+      doom-variable-pitch-font (font-spec :family "Charter" :size 16))
 
 (setq doom-theme 'doom-one-light)
 
@@ -68,6 +68,7 @@
   (map! :map org-mode-map :g "C-'" 'nil)
   (map! :g "C-'" 'avy-goto-char)
   )
+
 (avy-setup-default)
 #+end_src
 
@@ -81,8 +82,14 @@ Also, bind =C-s= to =swiper-isearch=, and =C-r= to =swiper-isearch-backward=
 
 #+begin_src elisp
 
-;;(map! :g "C-s" #'swiper-isearch)
-;;(map! :g "C-r" #'swiper-isearch-backward)
+(map! :g "C-s" #'swiper-isearch)
+(map! :g "C-r" #'swiper-isearch-backward)
+#+end_src
+
+#+begin_src elisp
+(setq mac-right-option-modifier 'meta)
+(setq mac-command-modifier 'super)
+(setq mac-right-command-modifier 'left)
 #+end_src
 
 * Productivity
@@ -135,7 +142,7 @@ Point all packages to the correct location.
         ("i" "inbox" tags-todo "inbox")
         ("p" "projects" tags-todo "projects")
         ("h" "habits" tags-todo "STYlE=\"habit\"")
-        ("n" "next-actions" todo "STRT")
+        ("n" "next-actions" todo "NEXT")
         ("r" "routines" search "Routine")
         ("o" "Daily Agenda"
          ((agenda "" (
@@ -143,11 +150,16 @@ Point all packages to the correct location.
                       (org-agenda-overriding-header "Agenda")
                       (org-agenda-start-day ".")
                       ))
-          (todo "STRT" ((org-agenda-overriding-header "Next actions"))))
-         ((org-agenda-block-separator nil)
+          (todo "NEXT" ((org-agenda-overriding-header "Next actions")))
+          (todo "WAIT" ((org-agenda-overriding-header "Waiting")))
+          (tags-todo "STYlE=\"habit\"" ((org-agenda-overriding-header "Habits")))
+          (search "Routine" ((org-agenda-overriding-header "Routines")))
+          )
+         (
           (org-habit-show-habits nil))
          )
         ))
+(setq org-stuck-projects '("+LEVEL=2/-DONE/-SMDY/-TAG" ("NEXT" "NEXTACTION") ("someday" "agenda") ""))
 #+end_src
 *** org-super-agenda
 
@@ -248,7 +260,8 @@ Leave it out for now, can't get it to work with evil keybindings
 #+end_src
 *** org-journal
 #+begin_src elisp
-(setq org-journal-file-format "%Y-%m-%d.org")
+(setq org-journal-file-format "%Y-%m-%d.org"
+      org-journal-file-type 'weekly)
 #+end_src
 *** org-habit
 #+begin_src elisp
@@ -273,6 +286,21 @@ Leave it out for now, can't get it to work with evil keybindings
 *** org-export
 #+begin_src elisp
 (setq org-export-preserve-breaks t)
+#+end_src
+*** Todo keywords
+#+begin_src elisp
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "NEXT(n)" "PROJ(p)" "WAIT(w)" "|" "DONE(d)" "CNCL(c)" "SMDY(s)"))
+
+      org-todo-keyword-faces
+      '(("[-]" . +org-todo-active)
+        ("NEXT" . +org-todo-active)
+        ("[?]" . +org-todo-onhold)
+        ("WAIT" . +org-todo-onhold)
+        ("HOLD" . +org-todo-onhold)
+        ("SMDY" . +org-todo-onhold)
+        ("PROJ" . +org-todo-project))
+      )
 #+end_src
 ** Mu4e
 
@@ -435,6 +463,7 @@ After that, you should be good to go!
 * Code
 
 #+begin_src elisp
+(setq projectile-project-search-path '("~/code"))
 (after! java-mode (setq c-basic-offset 4))
 (setq js-indent-level 2)
 (setq typescript-indent-level 2)
@@ -442,9 +471,11 @@ After that, you should be good to go!
       web-mode-markup-indent-offset 2)
 (after! lsp-mode (setq +format-with-lsp nil))
 (setq +format-with-lsp nil)
-(setq-hook! 'typescript-tsx-mode +format-with-lsp nil)
-(setq-hook! 'typescript-mode +format-with-lsp nil)
+(setq-hook! typescript-tsx-mode +format-with-lsp nil)
+(setq-hook! typescript-mode +format-with-lsp nil)
 (setq +default-want-RET-continue-comments nil)
+;; (add-hook! typescript-mode (sgml-mode))
+;; (add-hook! typescript-tsx-mode (sgml-mode))
 #+end_src
 
 * My elisp
@@ -492,6 +523,25 @@ After that, you should be good to go!
 (map! :leader
       :desc "Open senior design terminals"  :g "o C"
       'zulfi/senior-design-terminals)
+#+end_src
+** Chortle terminals
+#+begin_src elisp
+(defun zulfi/chortle-terminals ()
+  "Opens the terminals for penn-os"
+  (interactive)
+  ;; Open and set up the api terminal
+  (call-interactively `doom/window-maximize-buffer)
+  (call-interactively `+vterm/here)
+  (end-of-buffer)
+  (vterm-send-string "cd ~/code/chortle\n")
+  (vterm-send-string "source ~/.virtualenvs/chortle/bin/activate\n")
+
+  ;; Save the window configuration and return
+  (window-configuration-to-register ?a)
+  (message "Done!")
+  )
+(map! :leader
+      :desc "Open chortle terminals"  :m "o c" 'zulfi/chortle-terminals)
 #+end_src
 ** CIS380 terminals
 #+begin_src elisp
@@ -566,4 +616,35 @@ has no effect."
 
 (run-with-idle-timer 3 t #'zulfi/set-system-dark-mode)
 #+end_src
+** Winter break dashboard
+#+begin_src elisp :results replace
+(defun zulfi/generate-banner-string ()
+  `(
+    "Zulfi's Emacs."
+    ,(format
+      "There are %d days until the end of winter break."
+      (org-time-stamp-to-now "<2021-01-20 Wed>")
+      )
+    )
+  )
 
+(defun zulfi/date-countdown ()
+  (let* ((banner
+          (zulfi/generate-banner-string))
+         (longest-line (apply #'max (mapcar #'length banner))))
+    (put-text-property
+     (point)
+     (dolist (line banner (point))
+       (insert (+doom-dashboard--center
+                +doom-dashboard--width
+                (concat
+                 line (make-string (max 0 (- longest-line (length line)))
+                                   32)))
+               "\n"))
+     'face 'doom-dashboard-banner)))
+
+(setq +doom-dashboard-ascii-banner-fn 'zulfi/date-countdown)
+#+end_src
+
+#+RESULTS:
+: zulfi/date-countdown

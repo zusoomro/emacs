@@ -2,7 +2,7 @@
       user-mail-address "me@zusoomro.com")
 
 (setq doom-font (font-spec :family "Fira Code" :size 13)
-      doom-variable-pitch-font (font-spec :family "JetBrains Mono" :size 13))
+      doom-variable-pitch-font (font-spec :family "Charter" :size 16))
 
 (setq doom-theme 'doom-one-light)
 
@@ -34,12 +34,17 @@
   (map! :map org-mode-map :g "C-'" 'nil)
   (map! :g "C-'" 'avy-goto-char)
   )
+
 (avy-setup-default)
 
 (setq swiper-use-visual-line-p #'ignore)
 
-;;(map! :g "C-s" #'swiper-isearch)
-;;(map! :g "C-r" #'swiper-isearch-backward)
+(map! :g "C-s" #'swiper-isearch)
+(map! :g "C-r" #'swiper-isearch-backward)
+
+(setq mac-right-option-modifier 'meta)
+(setq mac-command-modifier 'super)
+(setq mac-right-command-modifier 'left)
 
 ;; if you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. it must be set before org loads!
@@ -78,7 +83,7 @@
         ("i" "inbox" tags-todo "inbox")
         ("p" "projects" tags-todo "projects")
         ("h" "habits" tags-todo "STYlE=\"habit\"")
-        ("n" "next-actions" todo "STRT")
+        ("n" "next-actions" todo "NEXT")
         ("r" "routines" search "Routine")
         ("o" "Daily Agenda"
          ((agenda "" (
@@ -86,11 +91,16 @@
                       (org-agenda-overriding-header "Agenda")
                       (org-agenda-start-day ".")
                       ))
-          (todo "STRT" ((org-agenda-overriding-header "Next actions"))))
-         ((org-agenda-block-separator nil)
+          (todo "NEXT" ((org-agenda-overriding-header "Next actions")))
+          (todo "WAIT" ((org-agenda-overriding-header "Waiting")))
+          (tags-todo "STYlE=\"habit\"" ((org-agenda-overriding-header "Habits")))
+          (search "Routine" ((org-agenda-overriding-header "Routines")))
+          )
+         (
           (org-habit-show-habits nil))
          )
         ))
+(setq org-stuck-projects '("+LEVEL=2/-DONE/-SMDY/-TAG" ("NEXT" "NEXTACTION") ("someday" "agenda") ""))
 
 (setq org-tag-persistent-alist '(
                                  (:startgroup . nil)
@@ -120,7 +130,8 @@
                               "/Entered on/ %U"))
                     )))
 
-(setq org-journal-file-format "%Y-%m-%d.org")
+(setq org-journal-file-format "%Y-%m-%d.org"
+      org-journal-file-type 'weekly)
 
 (require 'org-checklist)
 (after! org (add-to-list 'org-modules 'org-habit t)
@@ -137,6 +148,19 @@
 (setq +org-roam-open-buffer-on-find-file nil)
 
 (setq org-export-preserve-breaks t)
+
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "NEXT(n)" "PROJ(p)" "WAIT(w)" "|" "DONE(d)" "CNCL(c)" "SMDY(s)"))
+
+      org-todo-keyword-faces
+      '(("[-]" . +org-todo-active)
+        ("NEXT" . +org-todo-active)
+        ("[?]" . +org-todo-onhold)
+        ("WAIT" . +org-todo-onhold)
+        ("HOLD" . +org-todo-onhold)
+        ("SMDY" . +org-todo-onhold)
+        ("PROJ" . +org-todo-project))
+      )
 
 (after! mu4e
   ;; Each path is relative to `+mu4e-mu4e-mail-path', which is ~/.mail by default
@@ -261,6 +285,7 @@
 
 (map! :map dired-mode-map :g "-" `dired-up-directory)
 
+(setq projectile-project-search-path '("~/code"))
 (after! java-mode (setq c-basic-offset 4))
 (setq js-indent-level 2)
 (setq typescript-indent-level 2)
@@ -268,9 +293,11 @@
       web-mode-markup-indent-offset 2)
 (after! lsp-mode (setq +format-with-lsp nil))
 (setq +format-with-lsp nil)
-(setq-hook! 'typescript-tsx-mode +format-with-lsp nil)
-(setq-hook! 'typescript-mode +format-with-lsp nil)
+(setq-hook! typescript-tsx-mode +format-with-lsp nil)
+(setq-hook! typescript-mode +format-with-lsp nil)
 (setq +default-want-RET-continue-comments nil)
+;; (add-hook! typescript-mode (sgml-mode))
+;; (add-hook! typescript-tsx-mode (sgml-mode))
 
 (defun zulfi/hello-world ()
   "My first elisp function!"
@@ -310,6 +337,23 @@
 (map! :leader
       :desc "Open senior design terminals"  :g "o C"
       'zulfi/senior-design-terminals)
+
+(defun zulfi/chortle-terminals ()
+  "Opens the terminals for penn-os"
+  (interactive)
+  ;; Open and set up the api terminal
+  (call-interactively `doom/window-maximize-buffer)
+  (call-interactively `+vterm/here)
+  (end-of-buffer)
+  (vterm-send-string "cd ~/code/chortle\n")
+  (vterm-send-string "source ~/.virtualenvs/chortle/bin/activate\n")
+
+  ;; Save the window configuration and return
+  (window-configuration-to-register ?a)
+  (message "Done!")
+  )
+(map! :leader
+      :desc "Open chortle terminals"  :m "o c" 'zulfi/chortle-terminals)
 
 (defun zulfi/penn-os-terminals ()
   "Opens the terminals for penn-os"
@@ -373,6 +417,33 @@ has no effect."
   )
 
 (run-with-idle-timer 3 t #'zulfi/set-system-dark-mode)
+
+(defun zulfi/generate-banner-string ()
+  `(
+    "Zulfi's Emacs."
+    ,(format
+      "There are %d days until the end of winter break."
+      (org-time-stamp-to-now "<2021-01-20 Wed>")
+      )
+    )
+  )
+
+(defun zulfi/date-countdown ()
+  (let* ((banner
+          (zulfi/generate-banner-string))
+         (longest-line (apply #'max (mapcar #'length banner))))
+    (put-text-property
+     (point)
+     (dolist (line banner (point))
+       (insert (+doom-dashboard--center
+                +doom-dashboard--width
+                (concat
+                 line (make-string (max 0 (- longest-line (length line)))
+                                   32)))
+               "\n"))
+     'face 'doom-dashboard-banner)))
+
+(setq +doom-dashboard-ascii-banner-fn 'zulfi/date-countdown)
 
 (add-hook! nov-mode
   (setq visual-fill-column-mode t)
