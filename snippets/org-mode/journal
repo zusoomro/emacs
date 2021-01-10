@@ -1,0 +1,21 @@
+# -*- mode: snippet -*-
+# name: journal
+# key: good-night
+# condition: t
+# --
+Good night!
+
+M (number): $1  
+Exercise (weights, cardio, other): $2
+Sleep quality (1-10): $3 
+Diet quality (1-10): $4 
+Satisfaction with day (1-10): $5 
+Pomodoros (number): $6
+
+Three things I'm grateful for:
+1. $7
+2. $8
+3. $9
+
+My thoughts:
+$0

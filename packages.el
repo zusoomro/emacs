@@ -54,3 +54,4 @@
 (package! org-caldav)
 (package! org-drill)
 (package! slack)
+(package! org-board)

@@ -93,8 +93,7 @@
                       ))
           (todo "NEXT" ((org-agenda-overriding-header "Next actions")))
           (todo "WAIT" ((org-agenda-overriding-header "Waiting")))
-          (tags-todo "STYlE=\"habit\"" ((org-agenda-overriding-header "Habits")))
-          (search "Routine" ((org-agenda-overriding-header "Routines")))
+          ;; (tags-todo "STYlE=\"habit\"" ((org-agenda-overriding-header "Habits")))
           )
          (
           (org-habit-show-habits nil))
@@ -130,7 +129,7 @@
                               "/Entered on/ %U"))
                     )))
 
-(setq org-journal-file-format "%Y-%m-%d.org"
+(setq org-journal-file-format "%Y-%m-%d.org.gpg"
       org-journal-file-type 'weekly)
 
 (require 'org-checklist)
@@ -162,8 +161,11 @@
         ("PROJ" . +org-todo-project))
       )
 
+(setq org-web-tools-archive-wget-options '("--ignore-tags=script,iframe" "--reject=eot,ttf,svg,otf,*.woff*" "--adjust-extension" "--span-hosts" "--convert-links" "--page-requisites" "--timestamping" "--no-directories"))
+
 (after! mu4e
   ;; Each path is relative to `+mu4e-mu4e-mail-path', which is ~/.mail by default
+  (setq mu4e~get-mail-password-regexp "Enter the password for me@zusoomro.com at my.1password.com:")
   (setq mu4e-view-prefer-html t)
   (setq fill-flowed-encode-column 998)
   (setq mu4e-maildir-shortcuts '(
