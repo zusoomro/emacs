@@ -35,28 +35,32 @@
   (map! :g "C-'" 'avy-goto-char)
   )
 
-(avy-setup-default)
+(unless (featurep! :editor evil) (avy-setup-default))
 
 (setq swiper-use-visual-line-p #'ignore)
 
-(map! :g "C-s" #'swiper-isearch)
-(map! :g "C-r" #'swiper-isearch-backward)
+(unless (featurep! :editor evil)
+  (map! :g "C-s" #'swiper-isearch)
+  (map! :g "C-r" #'swiper-isearch-backward))
 
 (setq mac-right-option-modifier 'meta)
 (setq mac-command-modifier 'super)
 (setq mac-right-command-modifier 'left)
 
+(setq epa-file-cache-passphrase-for-symmetric-encryption t)
+
 ;; if you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. it must be set before org loads!
 
-(setq root-directory "~/Dropbox")
-(setq gtd-directory (concat root-directory "/gtd"))
+(setq root-directory "~/cloud")
+(setq gtd-directory (concat root-directory "/notes"))
 (setq notes-directory (concat root-directory "/notes"))
 (setq journal-directory (concat root-directory "/journal"))
 
 (setq org-directory notes-directory)
 (setq org-roam-directory notes-directory)
-(setq org-agenda-files `("~/Dropbox/gtd"))
+(setq org-agenda-files `("~/cloud/notes/inbox.org"
+                         "~/cloud/notes/projects.org") )
 (setq org-journal-dir journal-directory)
 (setq org-archive-location (concat gtd-directory "/archive.org_archive::datetree/"))
 
@@ -95,8 +99,8 @@
           (todo "WAIT" ((org-agenda-overriding-header "Waiting")))
           ;; (tags-todo "STYlE=\"habit\"" ((org-agenda-overriding-header "Habits")))
           )
-         (
-          (org-habit-show-habits nil))
+         ;; (
+         ;;  (org-habit-show-habits nil))
          )
         ))
 (setq org-stuck-projects '("+LEVEL=2/-DONE/-SMDY/-TAG" ("NEXT" "NEXTACTION") ("someday" "agenda") ""))
@@ -120,29 +124,29 @@
 (map! [remap org-set-tags-command] nil)
 
 (after! org (setq org-capture-templates
-                  `(("i" "Inbox" entry (file "~/Dropbox/gtd/inbox.org")
+                  `(("i" "Inbox" entry (file "~/cloud/notes/inbox.org")
                      ,(concat "* TODO %?\n"
                               "/Entered on/ %U"))
-                    ("I" "Inbox w/ attachment" entry (file "~/Dropbox/gtd/inbox.org")
+                    ("I" "Inbox w/ attachment" entry (file "~/cloud/notes/inbox.org")
                      ,(concat "* TODO %?\n"
                               "%a\n"
                               "/Entered on/ %U"))
                     )))
 
-(setq org-journal-file-format "%Y-%m-%d.org.gpg"
+(setq org-journal-file-format "%Y-%m-%d.org"
       org-journal-file-type 'weekly)
 
 (require 'org-checklist)
-(after! org (add-to-list 'org-modules 'org-habit t)
-  (add-to-list 'org-modules 'org-checklist t))
+(after! org (add-to-list 'org-modules 'org-habit)
+  (add-to-list 'org-modules 'org-checklist))
 
-(after! org-caldav
-  (setq
-   org-caldav-url "https://caldav.fastmail.com/dav/calendars/user/me@zusoomro.com/"
-   org-caldav-calendar-id "54b62cc0-e024-4081-a88a-14abdf81d875"
-   org-caldav-inbox "~/Dropbox/gtd/calendar-two.org"
-   org-caldav-backup-file "~/Dropbox/gtd/calendar.org.bak"
-   ))
+;; (after! org-caldav
+;;   (setq
+;;    org-caldav-url "https://caldav.fastmail.com/dav/calendars/user/me@zusoomro.com/"
+;;    org-caldav-calendar-id "54b62cc0-e024-4081-a88a-14abdf81d875"
+;;    org-caldav-inbox "~/Dropbox/gtd/calendar-two.org"
+;;    org-caldav-backup-file "~/Dropbox/gtd/calendar.org.bak"
+;;    ))
 
 (setq +org-roam-open-buffer-on-find-file nil)
 
@@ -161,12 +165,15 @@
         ("PROJ" . +org-todo-project))
       )
 
-(setq org-web-tools-archive-wget-options '("--ignore-tags=script,iframe" "--reject=eot,ttf,svg,otf,*.woff*" "--adjust-extension" "--span-hosts" "--convert-links" "--page-requisites" "--timestamping" "--no-directories"))
-
 (after! mu4e
   ;; Each path is relative to `+mu4e-mu4e-mail-path', which is ~/.mail by default
-  (setq mu4e~get-mail-password-regexp "Enter the password for me@zusoomro.com at my.1password.com:")
-  (setq mu4e-view-prefer-html t)
+  (setq mu4e-view-prefer-html nil)
+  ;; (add-hook 'mu4e-compose-mode-hook 'turn-off-auto-fill)
+  ;; (add-hook 'mu4e-view-mode-hook 'turn-off-auto-fill)
+  ;; (add-hook 'mu4e-compose-mode-hook 'visual-line-mode)
+  ;; (add-hook 'mu4e-view-mode-hook 'visual-line-mode)
+  ;; (add-hook 'mu4e-compose-mode-hook 'visual-fill-column-mode)
+  ;; (add-hook 'mu4e-view-mode-hook 'visual-fill-column-mode)
   (setq fill-flowed-encode-column 998)
   (setq mu4e-maildir-shortcuts '(
                                  (:maildir "/me/Spam" :key ?S)
@@ -230,7 +237,7 @@
 ;;   (visual-fill-column-mode)
 ;;   (auto-fill-mode -1)
 ;;   )
-(setq-hook! 'mu4e-view-mode visual-fill-column-center-text nil)
+;; (setq-hook! 'mu4e-view-mode visual-fill-column-center-text nil)
 
 (map! :map mu4e-headers-mode-map :n "/" `evil-ex-search-forward)
 
