@@ -49,9 +49,5 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 
-(package! nov)
-(package! org-super-agenda)
-(package! org-caldav)
 (package! org-drill)
-(package! slack)
 (package! org-board)

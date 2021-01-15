@@ -73,10 +73,6 @@
 (setq org-pomodoro-keep-killed-time t)
 (setq org-pomodoro-keep-killed-pomodoro-time t)
 
-;; (after! (pdf-tools org-noter)
-;;   (map! :map pdf-view-mode-map
-;;         :n "i" #'org-noter-insert-note))
-
 (setq org-agenda-dim-blocked-tasks nil)
 (setq org-agenda-custom-commands
       '(("c" "cis380" tags-todo "cis380")
@@ -140,14 +136,6 @@
 (after! org (add-to-list 'org-modules 'org-habit)
   (add-to-list 'org-modules 'org-checklist))
 
-;; (after! org-caldav
-;;   (setq
-;;    org-caldav-url "https://caldav.fastmail.com/dav/calendars/user/me@zusoomro.com/"
-;;    org-caldav-calendar-id "54b62cc0-e024-4081-a88a-14abdf81d875"
-;;    org-caldav-inbox "~/Dropbox/gtd/calendar-two.org"
-;;    org-caldav-backup-file "~/Dropbox/gtd/calendar.org.bak"
-;;    ))
-
 (setq +org-roam-open-buffer-on-find-file nil)
 
 (setq org-export-preserve-breaks t)
@@ -164,133 +152,6 @@
         ("SMDY" . +org-todo-onhold)
         ("PROJ" . +org-todo-project))
       )
-
-(after! mu4e
-  ;; Each path is relative to `+mu4e-mu4e-mail-path', which is ~/.mail by default
-  (setq mu4e-view-prefer-html nil)
-  ;; (add-hook 'mu4e-compose-mode-hook 'turn-off-auto-fill)
-  ;; (add-hook 'mu4e-view-mode-hook 'turn-off-auto-fill)
-  ;; (add-hook 'mu4e-compose-mode-hook 'visual-line-mode)
-  ;; (add-hook 'mu4e-view-mode-hook 'visual-line-mode)
-  ;; (add-hook 'mu4e-compose-mode-hook 'visual-fill-column-mode)
-  ;; (add-hook 'mu4e-view-mode-hook 'visual-fill-column-mode)
-  (setq fill-flowed-encode-column 998)
-  (setq mu4e-maildir-shortcuts '(
-                                 (:maildir "/me/Spam" :key ?S)
-                                 (:maildir "/seas/[Gmail]/Spam" :key ?s)
-                                 (:maildir "/me/INBOX" :key ?I)
-                                 (:maildir "/seas/INBOX" :key ?i)))
-  (setq +mu4e-mu4e-mail-path "~/.mail")
-
-  (set-email-account! "me"
-                      '((mu4e-sent-folder       . "/me/Sent")
-                        (mu4e-drafts-folder     . "/me/Drafts")
-                        (mu4e-trash-folder      . "/me/Trash")
-                        (mu4e-refile-folder     . "/me/Archive")
-                        (smtpmail-smtp-user     . "me@zusoomro.com")
-                        (user-mail-address      . "me@zusoomro.com")
-                        (smtpmail-default-smtp-server . "smtp.fastmail.com")
-                        (smtpmail-smtp-server         . "smtp.fastmail.com")
-                        (smtpmail-stream-type . starttls)
-                        (smtpmail-smtp-service . 587))
-                      t)
-
-  (set-email-account! "gmail"
-                      '((mu4e-sent-folder       . "/gmail/[Gmail]/Sent Mail")
-                        (mu4e-drafts-folder     . "/gmail/[Gmail]/Drafts")
-                        (mu4e-trash-folder      . "/gmail/[Gmail]/Trash")
-                        (mu4e-refile-folder     . "/gmail/[Gmail]/All Mail")
-                        (smtpmail-smtp-user     . "zulfiqar0821@gmail.com")
-                        (user-mail-address      . "zulfiqar0821@gmail.com")
-                        (smtpmail-default-smtp-server . "smtp.gmail.com")
-                        (smtpmail-smtp-server         . "smtp.gmail.com")
-                        (smtpmail-smtp-server         . "smtp.gmail.com")
-                        (smtpmail-stream-type . ssl)
-                        (smtpmail-smtp-service . 465))
-                      t)
-
-  (set-email-account! "seas"
-                      '((mu4e-sent-folder       . "/seas/[Gmail]/Sent Mail")
-                        (mu4e-drafts-folder     . "/seas/[Gmail]/Drafts")
-                        (mu4e-trash-folder      . "/seas/[Gmail]/Trash")
-                        (mu4e-refile-folder     . "/seas/[Gmail]/All Mail")
-                        (smtpmail-smtp-user     . "zusoomro@seas.upenn.edu")
-                        (user-mail-address      . "zusoomro@seas.upenn.edu")
-                        (smtpmail-default-smtp-server . "smtp.gmail.com")
-                        (smtpmail-smtp-server         . "smtp.gmail.com")
-                        (smtpmail-smtp-server         . "smtp.gmail.com")
-                        (smtpmail-stream-type . ssl)
-                        (smtpmail-smtp-service . 465))
-                      t)
-  (setq
-   message-send-mail-function   'smtpmail-send-it
-   send-mail-function   'smtpmail-send-it
-   smtpmail-default-smtp-server "smtp.fastmail.com"
-   smtpmail-smtp-server         "smtp.fastmail.com"
-   smtpmail-stream-type 'starttls
-   smtpmail-smtp-service 587)
-
-  (add-to-list 'mu4e-bookmarks '("maildir:\"/me/INBOX\" OR  maildir:\"/seas/INBOX\" OR  maildir:\"/gmail/INBOX\"" "Inboxes" ?i))
-  )
-
-;; (add-hook! mu4e-view-mode
-;;   (visual-fill-column-mode)
-;;   (auto-fill-mode -1)
-;;   )
-;; (setq-hook! 'mu4e-view-mode visual-fill-column-center-text nil)
-
-(map! :map mu4e-headers-mode-map :n "/" `evil-ex-search-forward)
-
-;; config.el
-(use-package slack
-  :commands slack-start
-  :init
-  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
-  (setq slack-prefer-current-team t)
-  :config
-  (slack-register-team
-   :name "Senior Design"
-   :token (auth-source-pick-first-password
-           :host "seniordesign-hma6210.slack.com"
-           :user "me@zusoomro.com")
-   :subscribed-channels '((general random)))
-
-  (slack-register-team
-   :name "CIS557"
-   :token (auth-source-pick-first-password
-           :host "cis-557.slack.com"
-           :user "zusoomro@seas.upenn.edu")
-   :subscribed-channels '((general random)))
-
-  ;; (map! (:map slack-info-mode-map
-  ;;        "u" #'slack-room-update-messages)
-  ;;       (:map slack-mode-map
-  ;;        "C-n" 'slack-buffer-goto-next-message
-  ;;        "C-p" 'slack-buffer-goto-prev-message)
-  ;;       (:localleader
-  ;;        (:map slack-mode-map
-  ;;         "c" 'slack-buffer-kill
-  ;;         "ra" 'slack-message-add-reaction
-  ;;         "rr" 'slack-message-remove-reaction
-  ;;         "rs" 'slack-message-show-reaction-users
-  ;;         "pl" 'slack-room-pins-list
-  ;;         "pa" 'slack-message-pins-add
-  ;;         "pr" 'slack-message-pins-remove
-  ;;         "mm" 'slack-message-write-another-buffer
-  ;;         "me" 'slack-message-editp
-  ;;         "md" 'slack-message-delete
-  ;;         "u" 'slack-room-update-messages
-  ;;         "2" 'slack-message-embed-mention
-  ;;         "3" 'slack-message-embed-channel)
-  ;;        (:map slack-edit-message-mode-map
-  ;;         "k" 'slack-message-cancel-edit
-  ;;         "s" 'slack-message-send-from-buffer
-  ;;         "2" 'slack-message-embed-mention
-  ;;         "3" 'slack-message-embed-channel))))
-  )
-(use-package alert
-  :commands alert
-  :init (setq alert-default-style 'notifier))
 
 (map! :map dired-mode-map :g "-" `dired-up-directory)
 
@@ -346,42 +207,6 @@
 (map! :leader
       :desc "Open senior design terminals"  :g "o C"
       'zulfi/senior-design-terminals)
-
-(defun zulfi/chortle-terminals ()
-  "Opens the terminals for penn-os"
-  (interactive)
-  ;; Open and set up the api terminal
-  (call-interactively `doom/window-maximize-buffer)
-  (call-interactively `+vterm/here)
-  (end-of-buffer)
-  (vterm-send-string "cd ~/code/chortle\n")
-  (vterm-send-string "source ~/.virtualenvs/chortle/bin/activate\n")
-
-  ;; Save the window configuration and return
-  (window-configuration-to-register ?a)
-  (message "Done!")
-  )
-(map! :leader
-      :desc "Open chortle terminals"  :m "o c" 'zulfi/chortle-terminals)
-
-(defun zulfi/penn-os-terminals ()
-  "Opens the terminals for penn-os"
-  (interactive)
-  ;; Open and set up the api terminal
-  (call-interactively `doom/window-maximize-buffer)
-  (call-interactively `+vterm/here)
-  (end-of-buffer)
-  (vterm-send-string "cd ~/code/cis380/20fa-project-2-group-14\n")
-  (vterm-send-string "vagrant up\n")
-  (vterm-send-string "vagrant ssh\n")
-  (vterm-send-string "cd /vagrant/20fa-project-2-group-14\n")
-
-  ;; Save the window configuration and return
-  (window-configuration-to-register ?a)
-  (message "Done!")
-  )
-;; (map! :leader
-;;       :desc "Open penn-os terminals"  :m "o c" 'penn-os-terminals)
 
 (defvar zulfi/org-habit-show-graphs-everywhere t
   "If non-nil, show habit graphs in all types of agenda buffers.
