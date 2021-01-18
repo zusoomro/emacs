@@ -35,21 +35,10 @@
 #+end_src
 
 #+begin_src emacs-lisp
-(add-hook! nov-mode
-  (setq visual-fill-column-mode t)
-  (setq visual-fill-column-center-text t)
-  (setq line-spacing 4))
-
-(add-hook! writeroom-mode (doom/reset-font-size))
-
 (after! fill-column (setq visual-fill-column-center-text t))
-
-
-
+(setq delete-by-moving-to-trash t)
 ;; (setq evil-vsplit-window-right t
 ;;       evil-split-window-below t)
-
-(setq delete-by-moving-to-trash t)
 #+end_src
 
 ** Visual
@@ -62,8 +51,6 @@
 ** Editing
 
 #+begin_src elisp
-(setq kill-whole-line t)
-
 (after! org
   (map! :map org-mode-map :g "C-'" 'nil)
   (map! :g "C-'" 'avy-goto-char)
@@ -81,9 +68,8 @@ Don't let swiper use line-move in =visual-line-mode= files to keep it fast.
 Also, bind =C-s= to =swiper-isearch=, and =C-r= to =swiper-isearch-backward=
 
 #+begin_src elisp
-(unless (featurep! :editor evil)
-  (map! :g "C-s" #'swiper-isearch)
-  (map! :g "C-r" #'swiper-isearch-backward))
+(map! :g "C-s" #'swiper-isearch)
+(map! :g "C-r" #'swiper-isearch-backward)
 #+end_src
 
 #+begin_src elisp
@@ -118,7 +104,7 @@ Point all packages to the correct location.
 #+end_src
 *** Appearance
 #+begin_src elisp
-(add-hook! org-mode (visual-fill-column-mode))
+;; (add-hook! org-mode (visual-fill-column-mode))
 (setq org-startup-folded t)
 (setq org-hide-emphasis-markers t)
 ;; (setq mixed-pitch-set-height t)
@@ -202,14 +188,6 @@ Point all packages to the correct location.
 (after! org (add-to-list 'org-modules 'org-habit)
   (add-to-list 'org-modules 'org-checklist))
 #+end_src
-*** org-roam
-#+begin_src elisp
-(setq +org-roam-open-buffer-on-find-file nil)
-#+end_src
-*** org-export
-#+begin_src elisp
-(setq org-export-preserve-breaks t)
-#+end_src
 *** Todo keywords
 #+begin_src elisp
 (setq org-todo-keywords
@@ -229,8 +207,16 @@ Point all packages to the correct location.
 #+begin_src elisp
 (map! :map dired-mode-map :g "-" `dired-up-directory)
 #+end_src
+* Media
+#+begin_src elisp
+(setq elfeed-feeds
+      '(
+        "http://feeds.bbci.co.uk/news/world/rss.xml"
+        "https://hnrss.org/frontpage"
+        "https://hnrss.org/bestcomments"
+        ))
+#+end_src
 * Code
-
 #+begin_src elisp
 (setq projectile-project-search-path '("~/code"))
 (after! java-mode (setq c-basic-offset 4))

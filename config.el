@@ -28,8 +28,6 @@
 (setq visual-fill-column-center-text t)
 (setq-default line-spacing 4)
 
-(setq kill-whole-line t)
-
 (after! org
   (map! :map org-mode-map :g "C-'" 'nil)
   (map! :g "C-'" 'avy-goto-char)
@@ -39,9 +37,8 @@
 
 (setq swiper-use-visual-line-p #'ignore)
 
-(unless (featurep! :editor evil)
-  (map! :g "C-s" #'swiper-isearch)
-  (map! :g "C-r" #'swiper-isearch-backward))
+(map! :g "C-s" #'swiper-isearch)
+(map! :g "C-r" #'swiper-isearch-backward)
 
 (setq mac-right-option-modifier 'meta)
 (setq mac-command-modifier 'super)
@@ -64,7 +61,7 @@
 (setq org-journal-dir journal-directory)
 (setq org-archive-location (concat gtd-directory "/archive.org_archive::datetree/"))
 
-(add-hook! org-mode (visual-fill-column-mode))
+;; (add-hook! org-mode (visual-fill-column-mode))
 (setq org-startup-folded t)
 (setq org-hide-emphasis-markers t)
 ;; (setq mixed-pitch-set-height t)
@@ -136,10 +133,6 @@
 (after! org (add-to-list 'org-modules 'org-habit)
   (add-to-list 'org-modules 'org-checklist))
 
-(setq +org-roam-open-buffer-on-find-file nil)
-
-(setq org-export-preserve-breaks t)
-
 (setq org-todo-keywords
       '((sequence "TODO(t)" "NEXT(n)" "PROJ(p)" "WAIT(w)" "|" "DONE(d)" "CNCL(c)" "SMDY(s)"))
 
@@ -154,6 +147,13 @@
       )
 
 (map! :map dired-mode-map :g "-" `dired-up-directory)
+
+(setq elfeed-feeds
+      '(
+        "http://feeds.bbci.co.uk/news/world/rss.xml"
+        "https://hnrss.org/frontpage"
+        "https://hnrss.org/bestcomments"
+        ))
 
 (setq projectile-project-search-path '("~/code"))
 (after! java-mode (setq c-basic-offset 4))
@@ -279,18 +279,7 @@ has no effect."
 
 (setq +doom-dashboard-ascii-banner-fn 'zulfi/date-countdown)
 
-(add-hook! nov-mode
-  (setq visual-fill-column-mode t)
-  (setq visual-fill-column-center-text t)
-  (setq line-spacing 4))
-
-(add-hook! writeroom-mode (doom/reset-font-size))
-
 (after! fill-column (setq visual-fill-column-center-text t))
-
-
-
+(setq delete-by-moving-to-trash t)
 ;; (setq evil-vsplit-window-right t
 ;;       evil-split-window-below t)
-
-(setq delete-by-moving-to-trash t)
