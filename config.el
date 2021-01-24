@@ -1,8 +1,8 @@
 (setq user-full-name "Zulfiqar Soomro"
       user-mail-address "me@zusoomro.com")
 
-(setq doom-font (font-spec :family "Fira Code" :size 13)
-      doom-variable-pitch-font (font-spec :family "Charter" :size 16))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 13)
+      doom-variable-pitch-font (font-spec :family "Charter" :size 15))
 
 (setq doom-theme 'doom-one-light)
 
@@ -56,15 +56,15 @@
 
 (setq org-directory notes-directory)
 (setq org-roam-directory notes-directory)
-(setq org-agenda-files `("~/cloud/notes/inbox.org"
-                         "~/cloud/notes/projects.org") )
+(setq org-agenda-files `("~/cloud/gtd/inbox.org"
+                         "~/cloud/gtd/projects.org") )
 (setq org-journal-dir journal-directory)
 (setq org-archive-location (concat gtd-directory "/archive.org_archive::datetree/"))
 
 ;; (add-hook! org-mode (visual-fill-column-mode))
 (setq org-startup-folded t)
 (setq org-hide-emphasis-markers t)
-;; (setq mixed-pitch-set-height t)
+(setq mixed-pitch-set-height t)
 ;; (add-hook! org-mode (mixed-pitch-mode))
 
 (setq org-pomodoro-keep-killed-time t)
@@ -117,10 +117,10 @@
 (map! [remap org-set-tags-command] nil)
 
 (after! org (setq org-capture-templates
-                  `(("i" "Inbox" entry (file "~/cloud/notes/inbox.org")
+                  `(("i" "Inbox" entry (file "~/cloud/gtd/inbox.org")
                      ,(concat "* TODO %?\n"
                               "/Entered on/ %U"))
-                    ("I" "Inbox w/ attachment" entry (file "~/cloud/notes/inbox.org")
+                    ("I" "Inbox w/ attachment" entry (file "~/cloud/gtd/inbox.org")
                      ,(concat "* TODO %?\n"
                               "%a\n"
                               "/Entered on/ %U"))
@@ -146,6 +146,12 @@
         ("PROJ" . +org-todo-project))
       )
 
+(add-to-list `org-refile-targets '("~/cloud/notes/20210117163945-reading_list.org" :maxlevel . 1))
+(add-to-list `org-refile-targets '("~/cloud/notes/20210120095250-grocery_list.org" :maxlevel . 1))
+(add-to-list `org-refile-targets '("~/cloud/notes/20210120095223-pharmacy_list.org" :maxlevel . 1))
+
+(add-hook! org-mode (auto-fill-mode))
+
 (map! :map dired-mode-map :g "-" `dired-up-directory)
 
 (setq elfeed-feeds
@@ -168,6 +174,7 @@
 (setq +default-want-RET-continue-comments nil)
 ;; (add-hook! typescript-mode (sgml-mode))
 ;; (add-hook! typescript-tsx-mode (sgml-mode))
+(after! tramp)
 
 (defun zulfi/hello-world ()
   "My first elisp function!"

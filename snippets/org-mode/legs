@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: legs
+# key: legs
+# --
+| `(org-timestamp-format (org-timestamp-from-time (current-time) nil nil) (car org-time-stamp-formats)) ` | $2-$3-$4@$1 | $6-$7-$8@$5 | $10-$11-$12@$9 |

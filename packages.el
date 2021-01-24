@@ -51,3 +51,4 @@
 
 (package! org-drill)
 (package! org-board)
+(package! vagrant-tramp)
