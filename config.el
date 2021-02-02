@@ -57,7 +57,8 @@
 (setq org-directory notes-directory)
 (setq org-roam-directory notes-directory)
 (setq org-agenda-files `("~/cloud/gtd/inbox.org"
-                         "~/cloud/gtd/projects.org") )
+                         "~/cloud/gtd/projects.org"
+                         "~/cloud/gtd/agenda.org") )
 (setq org-journal-dir journal-directory)
 (setq org-archive-location (concat gtd-directory "/archive.org_archive::datetree/"))
 
@@ -80,7 +81,7 @@
         ("i" "inbox" tags-todo "inbox")
         ("p" "projects" tags-todo "projects")
         ("h" "habits" tags-todo "STYlE=\"habit\"")
-        ("n" "next-actions" todo "NEXT")
+        ("n" "next-actions" tags-todo "next")
         ("r" "routines" search "Routine")
         ("o" "Daily Agenda"
          ((agenda "" (
@@ -88,7 +89,7 @@
                       (org-agenda-overriding-header "Agenda")
                       (org-agenda-start-day ".")
                       ))
-          (todo "NEXT" ((org-agenda-overriding-header "Next actions")))
+          (tags-todo "next" ((org-agenda-overriding-header "Next actions")))
           (todo "WAIT" ((org-agenda-overriding-header "Waiting")))
           ;; (tags-todo "STYlE=\"habit\"" ((org-agenda-overriding-header "Habits")))
           )
@@ -98,8 +99,9 @@
         ))
 (setq org-stuck-projects '("+LEVEL=2/-DONE/-SMDY/-TAG" ("NEXT" "NEXTACTION") ("someday" "agenda") ""))
 
+(setq org-agenda-include-diary t)
+
 (setq org-tag-persistent-alist '(
-                                 (:startgroup . nil)
                                  ("cis380" . ?c)
                                  ("cis400" . ?C)
                                  ("urbs420" . ?u)
@@ -112,9 +114,11 @@
                                  ("social" . ?S)
                                  ("TA" . ?t)
                                  ("vehicle" . ?v)
+                                 ("next" . ?n)
+                                 ("businesshours" . ?b)
                                  ))
 
-(map! [remap org-set-tags-command] nil)
+;; (map! [remap org-set-tags-command] 'counsel-org-tag)
 
 (after! org (setq org-capture-templates
                   `(("i" "Inbox" entry (file "~/cloud/gtd/inbox.org")
@@ -149,8 +153,21 @@
 (add-to-list `org-refile-targets '("~/cloud/notes/20210117163945-reading_list.org" :maxlevel . 1))
 (add-to-list `org-refile-targets '("~/cloud/notes/20210120095250-grocery_list.org" :maxlevel . 1))
 (add-to-list `org-refile-targets '("~/cloud/notes/20210120095223-pharmacy_list.org" :maxlevel . 1))
+(add-to-list `org-refile-targets '("~/cloud/notes/20210120123715-things_to_think_about.org" :maxlevel . 1))
+(add-to-list `org-refile-targets '("~/cloud/gtd/someday.org" :maxlevel . 1))
 
 (add-hook! org-mode (auto-fill-mode))
+
+(defhydra process-inbox nil
+  "zoom"
+  ("n" zulfi/mark-as-next-action "next")
+  ("d" org-cut-subtree "delete")
+  ("j" org-next-visible-heading "down")
+  ("k" org-previous-visible-heading "up")
+  ("s" zulfi/mark-as-someday "someday")
+  ("S" org-schedule "schedule")
+  ("D" org-deadline "deadline")
+  )
 
 (map! :map dired-mode-map :g "-" `dired-up-directory)
 
@@ -285,6 +302,26 @@ has no effect."
      'face 'doom-dashboard-banner)))
 
 (setq +doom-dashboard-ascii-banner-fn 'zulfi/date-countdown)
+
+(defun zulfi/mark-as-next-action ()
+  (interactive)
+  (org-set-tags ":next:")
+  (org-refile nil nil (list nil "~/cloud/gtd/projects.org" nil nil)))
+
+(defun zulfi/mark-as-someday ()
+  (interactive)
+  (org-refile nil nil (list nil "~/cloud/gtd/someday.org" nil nil)))
+
+(defun process-inbox ()
+  (interactive)
+  (find-file "~/cloud/gtd/inbox.org")
+  (goto-char (point-min))
+  (org-next-visible-heading 1)
+  (process-inbox/body))
+
+(map! :leader
+      :desc "Open senior design terminals"  :g "o i"
+      'process-inbox)
 
 (after! fill-column (setq visual-fill-column-center-text t))
 (setq delete-by-moving-to-trash t)
