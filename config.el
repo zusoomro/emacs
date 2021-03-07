@@ -193,6 +193,60 @@
 ;; (add-hook! typescript-tsx-mode (sgml-mode))
 (after! tramp)
 
+(after! mu4e
+  ;; Each path is relative to `+mu4e-mu4e-mail-path', which is ~/.mail by default
+  (setq +mu4e-mu4e-mail-path "~/.mail")
+  (set-email-account! "me"
+                      '((mu4e-sent-folder       . "/me/Sent")
+                        (mu4e-drafts-folder     . "/me/Drafts")
+                        (mu4e-trash-folder      . "/me/Trash")
+                        (mu4e-refile-folder     . "/me/Archive")
+                        (smtpmail-smtp-user     . "me@zusoomro.com")
+                        (user-mail-address      . "me@zusoomro.com")
+                        (smtpmail-default-smtp-server . "smtp.fastmail.com")
+                        (smtpmail-smtp-server         . "smtp.fastmail.com")
+                        (smtpmail-stream-type . starttls)
+                        (smtpmail-smtp-service . 587))
+                      t)
+
+  (set-email-account! "gmail"
+                      '((mu4e-sent-folder       . "/gmail/[Gmail]/Sent Mail")
+                        (mu4e-drafts-folder     . "/gmail/[Gmail]/Drafts")
+                        (mu4e-trash-folder      . "/gmail/[Gmail]/Trash")
+                        (mu4e-refile-folder     . "/gmail/[Gmail]/All Mail")
+                        (smtpmail-smtp-user     . "zulfiqar0821@gmail.com")
+                        (user-mail-address      . "zulfiqar0821@gmail.com")
+                        (smtpmail-default-smtp-server . "smtp.gmail.com")
+                        (smtpmail-smtp-server         . "smtp.gmail.com")
+                        (smtpmail-smtp-server         . "smtp.gmail.com")
+                        (smtpmail-stream-type . ssl)
+                        (smtpmail-smtp-service . 465))
+                      t)
+
+  (set-email-account! "seas"
+                      '((mu4e-sent-folder       . "/seas/[Gmail]/Sent Mail")
+                        (mu4e-drafts-folder     . "/seas/[Gmail]/Drafts")
+                        (mu4e-trash-folder      . "/seas/[Gmail]/Trash")
+                        (mu4e-refile-folder     . "/seas/[Gmail]/All Mail")
+                        (smtpmail-smtp-user     . "zusoomro@seas.upenn.edu")
+                        (user-mail-address      . "zusoomro@seas.upenn.edu")
+                        (smtpmail-default-smtp-server . "smtp.gmail.com")
+                        (smtpmail-smtp-server         . "smtp.gmail.com")
+                        (smtpmail-smtp-server         . "smtp.gmail.com")
+                        (smtpmail-stream-type . ssl)
+                        (smtpmail-smtp-service . 465))
+                      t)
+  (setq
+   message-send-mail-function   'smtpmail-send-it
+   send-mail-function   'smtpmail-send-it
+   smtpmail-default-smtp-server "smtp.fastmail.com"
+   smtpmail-smtp-server         "smtp.fastmail.com"
+   smtpmail-stream-type 'starttls
+   smtpmail-smtp-service 587)
+
+  (add-to-list 'mu4e-bookmarks '("maildir:\"/me/INBOX\" OR  maildir:\"/seas/INBOX\" OR  maildir:\"/gmail/INBOX\"" "Inboxes" ?i))
+  )
+
 (defun zulfi/hello-world ()
   "My first elisp function!"
   (interactive)
